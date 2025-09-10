@@ -1,4 +1,10 @@
 
+/var/
+/vendor/
+/public/bundles/
+/node_modules/
+/public/build/
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -18,3 +24,5 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+.DS_Store
