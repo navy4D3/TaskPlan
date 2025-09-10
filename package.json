@@ -1,0 +1,33 @@
+{
+    "scripts": {
+        "dev-server": "encore dev-server",
+        "dev": "encore dev",
+        "watch": "encore dev --watch",
+        "build": "encore production --progress",
+        "sync": "browser-sync start --proxy '127.0.0.1:8000' --files 'templates/**/*.twig' 'assets/**/*.js' 'assets/**/*.scss' 'public/build/**/*.css' 'public/build/**/*.js'"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.22.0",
+        "@babel/preset-env": "^7.22.0",
+        "@symfony/webpack-encore": "^5.2.0",
+        "browser-sync": "^3.0.4",
+        "browser-sync-webpack-plugin": "^2.4.0",
+        "core-js": "^3.38.0",
+        "regenerator-runtime": "^0.13.9",
+        "sass": "^1.92.1",
+        "sass-loader": "^16.0.5",
+        "webpack": "^5.74.0",
+        "webpack-cli": "^5.1.0",
+        "webpack-dev-server": "^5.2.2"
+    },
+    "name": "taskplan_code",
+    "version": "1.0.0",
+    "main": "webpack.config.js",
+    "directories": {
+        "test": "tests"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": ""
+}

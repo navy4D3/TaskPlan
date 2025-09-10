@@ -1,0 +1,44 @@
+
+@import 'variables.scss';
+
+
+body {
+    background-color: $mallow-white;
+}
+
+
+h1 {
+    font-family: $poppins-title;
+}
+
+p {
+    font-family: $inter-body;
+}
+
+.mobile-only {
+    display: none !important;
+}
+
+.mobile-small-only {
+    display: none !important;
+}
+
+.popup.center {
+    z-index: 1000;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.blur-effect {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    
+    display: none;
+    backdrop-filter: blur(5px);
+    z-index: 950;
+    width: 100%;
+    height: 100%;
+}
