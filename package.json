@@ -10,6 +10,7 @@
         "@babel/core": "^7.22.0",
         "@babel/preset-env": "^7.22.0",
         "@symfony/webpack-encore": "^5.2.0",
+        "bootstrap": "^5.3.8",
         "browser-sync": "^3.0.4",
         "browser-sync-webpack-plugin": "^2.4.0",
         "core-js": "^3.38.0",

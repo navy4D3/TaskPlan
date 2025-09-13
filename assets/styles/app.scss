@@ -1,18 +1,44 @@
-
 @import 'variables.scss';
 
 
-body {
-    background-color: $mallow-white;
+
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
+body {
+    background-color: $mallow-white;
+    padding: 20px;
+}
 
-h1 {
+h1, span {
+    color: $mallow-black;
+}
+
+.white-text {
+    color: $mallow-white;
+}
+
+h1, span, label {
     font-family: $poppins-title;
 }
 
-p {
+p, label, span, input {
+    font-size: 16px;
     font-family: $inter-body;
+}
+
+p, img, input {
+    font-family: $inter-body;
+}
+
+.alert {
+    margin: 0px;
+}
+
+.alert-danger {
+    background-color: $red-soft-50;
+    border-color: $red-soft;
 }
 
 .mobile-only {
@@ -29,6 +55,34 @@ p {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+}
+
+form {
+
+    ul {
+        margin:0px;
+        padding: 0px;
+        list-style-type: none;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 5px;
+
+        li {
+            flex-grow: 1;
+            padding: 10px;
+            background-color: $red-soft-50;
+            border-color: $red-soft;
+            border-radius: 5px;
+        }
+
+    }
+
+    .inactive {
+        opacity: 75%;
+        pointer-events: none;
+        cursor: default;
+    }
 }
 
 .blur-effect {

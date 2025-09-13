@@ -1,0 +1,32 @@
+<form action="{{ path('app_login') }}" method="post" id="login-form" style="display:none;">
+    {% if error is defined and error is not null %}
+        <div id="login-error"class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+    
+    <div>
+        <label for="username">Email:</label>
+        <input type="text" id="username" name="_username" value="{{ last_username }}" required>
+    </div>
+    
+    <div>
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="_password" required>
+    </div>
+    
+    {# If you want to control the URL the user is redirected to on success
+    <input type="hidden" name="_target_path" value="/account"> #}
+
+    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+    <button type="submit">Se connecter</button>
+    
+    {#
+        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+        See https://symfony.com/doc/current/security/remember_me.html
+
+        <div class="checkbox mb-3">
+            <input type="checkbox" name="_remember_me" id="_remember_me">
+            <label for="_remember_me">Remember me</label>
+        </div>
+    #}
+</form>

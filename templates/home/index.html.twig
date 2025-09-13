@@ -1,11 +1,80 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('home-style') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('home') }}
+{% endblock %}
+
+{% block title %}Taskplan, gérez facilement{% endblock %}
 
 {% block body %}
+    {% if app.user %}
+        <p>Utilisation {{ app.user.email}} connecté</p>
+        <a href="/logout">Se deconnecter</a>
+    {% endif %}
+    <div class="top-section">
+        <div class="task1">
+            <span>Contacter l'IT</span>
+            <twig:ux:icon name="bi:check" />
+        </div>
 
-<div class="example-wrapper">
-    <h1>Hello TaskPlan ✅</h1>
-    <p>Ceci est un texte explicatif</p>
-</div>
+        <div class="task2">
+            <span class="white-text">Décliner offre</span>
+            <twig:ux:icon name="bi:x" />
+        </div>
+
+        <div class="task3">
+            <span>Appeler maman</span>
+            <twig:ux:icon name="lucide:loader" />
+        </div>
+
+        <img class="logo" src="./logo-taskplan-white.svg" alt="logotaskplan">
+
+        <h1>Organisez vos tâches. Simplifiez vos journées</h1>
+
+        <p>Taskplan est l'outil moderne qui vous aide à gérer vos projets, suivre vos objectifs et gagner du temps au quotidien.</p>
+    </div>
+
+    <div class="register-login-section">
+        <div class="labels">
+            <span id="register-label" class="selected">S'inscrire</span>
+            <span id="login-label">Se connecter</span>
+        </div>
+
+        {% include 'registration/register.html.twig' %}
+
+        {% include 'security/login.html.twig' %}
+
+        {# <form action="{{ path('app_login') }}" method="post" id="login-form" style="display:none;">
+            {% if error %}
+                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+            
+            <div>
+                <label for="username">Email:</label>
+                <input type="text" id="username" name="_username" value="{{ last_username }}" required>
+            </div>
+            
+            <div>
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="_password" required>
+            </div>
+            
+            {# If you want to control the URL the user is redirected to on success
+            <input type="hidden" name="_target_path" value="/account">
+
+            <input type="hidden" name="_csrf_token"  value="{{ csrf_token('authenticate') }}">
+
+            <button type="submit">Se connecter</button>
+        </form> #}
+        
+
+        {# ajouter formulaire connexion et inscription #}
+
+    </div>
 {% endblock %}
