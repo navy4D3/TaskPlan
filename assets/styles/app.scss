@@ -7,11 +7,11 @@
 }
 
 body {
-    background-color: $mallow-white;
+    background: linear-gradient($mallow-white, $mallow-medium-white);
     padding: 20px;
 }
 
-h1, span {
+h1, h2, span {
     color: $mallow-black;
 }
 

@@ -56,6 +56,12 @@ loginLabel.addEventListener('click', function() {
     registerForm.style.display = "none";
     loginForm.style.display = "flex";
 
+    if (window.innerWidth < 512) {
+        loginForm.style.borderRadius = "0px";
+    } else {
+        loginForm.style.borderRadius = "30px 0px 30px 30px";
+    }
+    
     registerLabel.classList.remove('selected');
     loginLabel.classList.add('selected');
     
@@ -64,6 +70,12 @@ loginLabel.addEventListener('click', function() {
 registerLabel.addEventListener('click', function() {
     registerForm.style.display = "flex";
     loginForm.style.display = "none";
+
+    if (window.innerWidth < 512) {
+        loginForm.style.borderRadius = "0px";
+    } else {
+        registerForm.style.borderRadius = "0px 30px 30px 30px";
+    }
     
     registerLabel.classList.add('selected');
     loginLabel.classList.remove('selected');

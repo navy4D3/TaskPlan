@@ -45,7 +45,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'attr' => [
-                    'placeholder' => "Adresse email"
+                    'placeholder' => "email@example.com"
                 ],
                 'label' => 'Email'
             ])
