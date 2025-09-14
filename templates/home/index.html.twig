@@ -20,7 +20,7 @@
     <div class="top-section">
         <div class="task1">
             <span>Contacter l'IT</span>
-            <twig:ux:icon name="bi:check" />
+            <twig:ux:icon name="bi:check-lg" />
         </div>
 
         <div class="task2">
@@ -50,31 +50,47 @@
 
         {% include 'security/login.html.twig' %}
 
-        {# <form action="{{ path('app_login') }}" method="post" id="login-form" style="display:none;">
-            {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
-            
-            <div>
-                <label for="username">Email:</label>
-                <input type="text" id="username" name="_username" value="{{ last_username }}" required>
+    </div>
+
+    <div class="app-description-section">
+        <h2>Finis les post-it éparpillés et les tâches oubliées</h2>
+        <p>Avec TaskPlan, centralisez toutes vos tâches dans une interface claire et intuitive. Planifiez vos projets, suivez vos progrès et gardez toujours une vue d’ensemble.</p>
+        <div class="tasks">
+            <div class="tasks-todo">
+                <twig:ux:icon name="bi:list-ul" />
+                <div class="task">
+                </div>
+                <div class="task">
+                </div>
+                <div class="task">
+                </div>
+                <div class="task">
+                </div>
             </div>
-            
-            <div>
-                <label for="password">Mot de passe</label>
-                <input type="password" id="password" name="_password" required>
+            <div class="tasks-current">
+                <twig:ux:icon name="lucide:loader" />
+                <div class="task">
+                </div>
+                <div class="task">
+                </div>
+                <div class="task">
+                </div>
             </div>
-            
-            {# If you want to control the URL the user is redirected to on success
-            <input type="hidden" name="_target_path" value="/account">
 
-            <input type="hidden" name="_csrf_token"  value="{{ csrf_token('authenticate') }}">
+            <div class="tasks-done">
+                <twig:ux:icon name="bi:check-lg" />
+                <div class="task">
+                </div>
+                <div class="task">
+                </div>
+            </div>
+        </div>
 
-            <button type="submit">Se connecter</button>
-        </form> #}
-        
+        <button>Booster ma productivité</button>
+    </div>
 
-        {# ajouter formulaire connexion et inscription #}
-
+    <div class="footer">
+        <span class="taskplan">TaskPlan</span>
+        <span class="since2025">Since 2025.</span>
     </div>
 {% endblock %}
