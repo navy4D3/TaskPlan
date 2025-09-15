@@ -1,4 +1,4 @@
-<form action="{{ path('app_login') }}" method="post" id="login-form" style="display:none;">
+<form action="{{ path('app_login') }}" method="post" id="login-form" class="base-form login-form" style="display:none;">
     {% if error is defined and error is not null %}
         <div id="login-error"class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}

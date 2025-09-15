@@ -12,12 +12,12 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 final class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
+    #[Route('/', name: 'home')]
     public function index(AuthenticationUtils $authenticationUtils, Security $security, $loginError = null, $defaultLogin = False): Response
     {
-        // if ($security->getUser()) {
-        //     return $this->redirectToRoute('profil');
-        // }
+        if ($security->getUser()) {
+            return $this->redirectToRoute('profil');
+        }
 
         // if ($defaultLogin) {
         //     return $this->redirectToRoute('app_home', [
@@ -38,4 +38,6 @@ final class HomeController extends AbstractController
             'error' => $loginError
         ]);
     }
+
+
 }

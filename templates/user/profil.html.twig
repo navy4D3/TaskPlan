@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('profil-style') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('profil') }}
+{% endblock %}
+
+{% block title %}Taskplan - Profil{% endblock %}
+
+{% block body %}
+    <div class="menu-and-details">
+        <div class="menu">
+            <div class="initials-name">
+                <span class="initials">{{ app.user.nom|slice(0,1) ~ app.user.prenom|slice(0,1)|upper }}</span>
+                <h1>{{ app.user.prenom|capitalize }} {{ app.user.nom|capitalize }}</h1>
+            </div>
+
+            <ul class="btns">
+                <li id="my-projects-btn" class="selected">Mes projets</li>
+                <li id="my-data-btn">Mes informations</li>
+                <li id="parameters-btn">Paramètres</li>
+            </ul>
+        </div>
+
+        <div class="section-details">
+            <div class="my-projects-section section">
+                <div class="label-btn">
+                    <h2>Mes projets</h2>
+                    <button><twig:ux:icon name="bi:plus-lg" />Ajouter</button>
+                </div>
+
+                <div class="projects" style="display:none;">
+                    <p>Aucun projet en cours</p>
+                    {# {% if app.user.projects is empty %}
+                        <p>Aucun projet en cours</p>
+                    {% else %}
+                        {% for project in app.user.projects %}
+                            <div class="project">
+                                {{ project.title }}
+                            </div>
+                        {% endif %}
+                    {% endif %} #}
+
+                </div>
+            </div>
+
+            <div class="my-data-section section" style="display:none;">
+                <div class="label-btn">
+                    <h2>Mes informations</h2>
+                    <button formaction="/profil/edit-data" type="action" style="display:none;"><twig:ux:icon name="mage:edit" />Modifier</button>
+                </div>
+
+                {{ form_start(myDataForm, { 'attr' : {'class' : 'base-form my-data-form' }}) }}
+                    {# {{ form_row(registrationForm.nom) }} #}
+                    {{ form_row(myDataForm.nom) }}
+                    {{ form_row(myDataForm.prenom) }}
+
+                    {# <button  class="btn submit inactive">S'inscrire</button> #}
+                {{ form_end(myDataForm) }}
+            </div>
+
+            <div class="parameters-section section" style="display:none;">
+                <h2>Paramètres</h2>
+                
+                <div class="parameters">
+                    <ul class="">
+                        <li id="edit-password-btn">Modifier mon mot de passe</li>
+                        <li id="edit-mail-btn">Modifier mon adresse mail</li>
+                        <a href="/cgu"><li>Conditions Générales d'Utilisation</li></a>
+                        <a href="/mentions-legales"><li>Mentions légales</li></a>
+                    </ul>
+
+                    <ul class="negative">
+                        <a href="/logout"><li class="full">Deconnexion</li></a>
+                        <li>Supprimer le compte</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        
+
+    </div>
+
+
+
+{% endblock %}
