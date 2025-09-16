@@ -34,18 +34,16 @@
                     <button><twig:ux:icon name="bi:plus-lg" />Ajouter</button>
                 </div>
 
-                <div class="projects" style="display:none;">
-                    <p>Aucun projet en cours</p>
-                    {# {% if app.user.projects is empty %}
-                        <p>Aucun projet en cours</p>
+                <div class="projects" style="">
+                    {% if app.user.projects is empty %}
+                        <p style="opacity:75%">Aucun projet en cours</p>
                     {% else %}
                         {% for project in app.user.projects %}
                             <div class="project">
                                 {{ project.title }}
                             </div>
-                        {% endif %}
-                    {% endif %} #}
-
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
 
@@ -81,6 +79,13 @@
                     </ul>
                 </div>
 
+            </div>
+        </div>
+
+        <div class="add-project-popup popup popup-center">
+            <div class="label-quit">
+                <span>Ajouter un projet</span>
+                <twig:ux:icon name="bi:x" />
             </div>
         </div>
 
