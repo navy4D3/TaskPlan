@@ -1,3 +1,4 @@
+const { showPopup, hidePopup, sanitizeInput, treatFormAlert } = require("../app");
 
 const myProjectsBtn = document.getElementById("my-projects-btn");
 const myDataBtn = document.getElementById("my-data-btn");
@@ -22,3 +23,227 @@ sectionBtns.forEach(btn => {
         btn.classList.add('selected');
     })
 })
+
+const myProjectsSection = document.querySelector(".my-projects-section");
+const profilShowAddProjectPopupBtn = myProjectsSection.querySelector(".show-add-project-popup-btn");
+const addProjectPopup = document.getElementById('add-project-popup');
+const addProjectBtn = addProjectPopup.querySelector('.add-project-btn');
+const addProjectInput = addProjectPopup.querySelector('input');
+const hideAddProjectPopupBtn = addProjectPopup.querySelector('.hide-popup-btn');
+
+const projectsList = myProjectsSection.querySelector(".projects");
+
+profilShowAddProjectPopupBtn.addEventListener('click', function() {
+    showPopup(addProjectPopup, 'flex');
+
+    addProjectBtn.classList.add('inactive');
+})
+
+hideAddProjectPopupBtn.addEventListener('click', () => {
+    hidePopup(addProjectPopup);
+    addProjectInput.value = "";
+})
+
+addProjectInput.addEventListener('input', () => {
+    addProjectBtn.classList.remove('inactive');
+})
+
+addProjectBtn.addEventListener('click', function() {
+    let title = sanitizeInput(addProjectInput.value);
+
+    if (!title) {
+        alert("Veuillez entrer un titre de projet valide");
+        return;
+    }
+
+    fetch('/add-project', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
+        },
+        body: JSON.stringify({ title: title })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("Projet créé :", data.project);
+            // 👉 ici tu pourrais ajouter dynamiquement le projet à ta liste
+
+            const projectDiv = document.createElement('a');
+            projectDiv.classList.add('project');
+            projectDiv.href = `/project/${data.project.id}`;
+            projectDiv.textContent = data.project.title;
+
+            // Redirection au clic vers /project/{id}
+            projectDiv.addEventListener('click', () => {
+                window.location.href = `/project/${data.project.id}`;
+            });
+
+            // Ajout au conteneur
+            projectsList.appendChild(projectDiv);
+
+            hidePopup(addProjectPopup)
+        } else {
+            alert("Erreur : " + data.message);
+        }
+    })
+    .catch(error => console.error("Erreur fetch:", error));
+
+    // clear l'input après l’envoi
+    addProjectInput.value = "";
+})
+
+
+const myDataSection = document.querySelector('.my-data-section');
+const myDataForm = myDataSection.querySelector('form');
+
+const myDataFormInputs = myDataSection.querySelectorAll('input');
+const editDataBtn = document.getElementById('edit-data-btn');
+
+myDataFormInputs.forEach(input => {
+    input.addEventListener('input', function() {
+        editDataBtn.style.display = "flex"
+    })
+})
+
+editDataBtn.addEventListener('click', function(){
+    const form = new FormData(myDataForm);
+    
+    fetch('/user/edit-data', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
+        },
+        body: form
+    })
+    .then(response => response.json())
+    .then(data => {
+            
+        treatFormAlert(myDataForm, 'Données modifiés avec succès', data);
+
+        editDataBtn.style.display = "none";
+
+    })
+    .catch(error => console.error("Erreur fetch:", error));
+})
+
+const parametersSection = document.querySelector('.parameters-section');
+
+const showEditPasswordSectionBtn = document.getElementById('show-edit-password-section-btn');
+const showEditMailSectionBtn = document.getElementById('show-edit-mail-section-btn');
+
+const editMailSection = document.querySelector('.edit-mail-section');
+const editPasswordSection = document.querySelector('.edit-password-section');
+
+parametersBtn.addEventListener('click', function() {
+    editMailSection.style.display = "none";
+    editPasswordSection.style.display = "none";
+})
+
+showEditMailSectionBtn.addEventListener('click', function() {
+    parametersSection.style.display = "none";
+    editMailSection.style.display = "flex";
+})
+
+showEditPasswordSectionBtn.addEventListener('click', function() {
+    parametersSection.style.display = "none";
+    editPasswordSection.style.display = "flex";
+})
+
+
+
+// === EDIT MAIL ===
+const editMailForm = document.querySelector('.edit-mail-form');
+const editPasswordForm = document.querySelector('.edit-password-form');
+
+const editMailFormInputs = editMailForm.querySelectorAll('input');
+const editMailBtn = editMailForm.querySelector('.submit');
+
+const editPasswordFormInputs = editPasswordForm.querySelectorAll('input');
+const editPasswordBtn = editPasswordForm.querySelector('.submit');
+
+editPasswordFormInputs.forEach(input => {
+    input.addEventListener('input', function() {
+        if (isAllInputsFilled(editPasswordFormInputs)) {
+            editPasswordBtn.classList.remove('inactive');
+        } else {
+            editPasswordBtn.classList.add('inactive');
+        }
+    })
+    
+    
+})
+
+function isAllInputsFilled(inputs) {
+    let allFilled = true;
+
+    inputs.forEach(input => {
+        if (input.value == "") {
+            allFilled = false;
+        }
+    })
+
+    return allFilled;
+}
+
+editMailFormInputs.forEach(input => {
+    input.addEventListener('input', function() {
+        if (isAllInputsFilled(editMailFormInputs)) {
+            editMailBtn.classList.remove('inactive');
+        } else {
+            editMailBtn.classList.add('inactive');
+        }
+    })
+    
+})
+
+
+editMailBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    const form = new FormData(editMailForm);
+
+    fetch('/user/edit-mail', {
+        method: 'POST',
+        body: form,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        treatFormAlert(editMailForm, 'Email modifié avec succès', data);
+
+        editMailForm.querySelector('input[type="password"]').value = "";
+    })
+    .catch(error => console.error("Erreur fetch:", error));
+});
+
+// === EDIT PASSWORD ===
+
+editPasswordBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    const form = new FormData(editPasswordForm);
+
+    fetch('/user/edit-password', {
+        method: 'POST',
+        body: form,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        
+        treatFormAlert(editPasswordForm, 'Mot de passe modifié avec succès', data);
+
+        editPasswordForm.querySelectorAll('input[type="password"]').forEach(input => input.value = "");
+        editPasswordBtn.classList.add('inactive');
+    })
+    .catch(error => console.error("Erreur fetch:", error));
+});
+
+
+
+

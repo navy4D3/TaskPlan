@@ -147,6 +147,7 @@ body {
             opacity: 100%;
             font-size: 20px;
             pointer-events: none;
+            cursor: default;
             color: $mallow-medium-white;
             
             background-color: $mallow-black;
@@ -204,6 +205,10 @@ body {
             flex-direction: row;
             align-items: center;
             gap: 5px;
+
+            * {
+                color: $mallow-white;
+            }
 
             svg {
                 width: 25px;

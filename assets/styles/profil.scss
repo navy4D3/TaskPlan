@@ -74,7 +74,7 @@ body {
             .selected {
                 font-weight: bold;
                 // margin-left: 10px;
-                pointer-events: none;
+                
             }
 
 
@@ -85,7 +85,7 @@ body {
         width: 100%;
         max-width: 500px;
 
-        .my-projects-section, .my-data-section, .parameters-section {
+        .section {
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -131,9 +131,40 @@ body {
             }
     
         }
+
+        .my-projects-section {
+
+            .projects {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+                .project {
+                    padding: 10px;
+                    text-decoration: none;
+                    border-radius: 10px;
+
+                    font-family: $inter-body;
+                    color: $mallow-black;
+                    background-color: $mallow-medium-25;
+                    // font-weight: bold;
+
+                    cursor: pointer;
+                }
+
+                a::first-letter {
+                    text-transform: uppercase;
+                }
+
+
+            }
+        }
     
         .my-data-section {
             .label-btn {
+                h2 {
+                    margin: 5px 0px;
+                }
                 button svg {
                     width: 20px;
                     height: 20px;
@@ -143,25 +174,31 @@ body {
                 }
             }
     
-            .my-data-form {
-    
-                > div {
-                    flex-direction: row;
-                    align-items: center;
-    
-                    label {
-                        font-weight: normal;
-                    }
-
-                    input {
-                        padding: 10px;
-                        background-color: $mallow-medium-white-50;
-                    }
-
-                }
-            }
+            
 
         }
+
+        .my-data-form, .edit-mail-form, .edit-password-form {
+    
+            > div {
+                flex-direction: row;
+                align-items: center;
+
+                label {
+                    font-weight: normal;
+                    white-space: nowrap;
+                    color: $mallow-medium-clean;
+                }
+
+                input {
+                    padding: 10px;
+                    background-color: $mallow-medium-white-50;
+                }
+
+            }
+        }
+
+
 
         .parameters-section {
             .parameters {
@@ -216,6 +253,42 @@ body {
             
         }
     }
+
     
+}
+
+.add-project-popup {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0px 0px 10px $mallow-medium-50;
+
+    .label-quit {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        span {
+            white-space: nowrap;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        svg {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+
+            color: $mallow-medium-black;
+
+            * {
+                stroke: $mallow-medium-black;
+                stroke-width: 1px;
+            }
+        }
+
+    }
 }
 

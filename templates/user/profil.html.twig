@@ -31,7 +31,7 @@
             <div class="my-projects-section section">
                 <div class="label-btn">
                     <h2>Mes projets</h2>
-                    <button><twig:ux:icon name="bi:plus-lg" />Ajouter</button>
+                    <button class="show-add-project-popup-btn"><twig:ux:icon name="bi:plus-lg" />Ajouter</button>
                 </div>
 
                 <div class="projects" style="">
@@ -39,9 +39,9 @@
                         <p style="opacity:75%">Aucun projet en cours</p>
                     {% else %}
                         {% for project in app.user.projects %}
-                            <div class="project">
+                            <a href="project/{{ project.id }}" class="project">
                                 {{ project.title }}
-                            </div>
+                            </a>
                         {% endfor %}
                     {% endif %}
                 </div>
@@ -50,7 +50,7 @@
             <div class="my-data-section section" style="display:none;">
                 <div class="label-btn">
                     <h2>Mes informations</h2>
-                    <button formaction="/profil/edit-data" type="action" style="display:none;"><twig:ux:icon name="mage:edit" />Modifier</button>
+                    <button id="edit-data-btn" formaction="/profil/edit-data" type="action" style="display:none;"><twig:ux:icon name="mage:edit" />Modifier</button>
                 </div>
 
                 {{ form_start(myDataForm, { 'attr' : {'class' : 'base-form my-data-form' }}) }}
@@ -67,8 +67,8 @@
                 
                 <div class="parameters">
                     <ul class="">
-                        <li id="edit-password-btn">Modifier mon mot de passe</li>
-                        <li id="edit-mail-btn">Modifier mon adresse mail</li>
+                        <li id="show-edit-password-section-btn">Modifier mon mot de passe</li>
+                        <li id="show-edit-mail-section-btn">Modifier mon adresse mail</li>
                         <a href="/cgu"><li>Conditions Générales d'Utilisation</li></a>
                         <a href="/mentions-legales"><li>Mentions légales</li></a>
                     </ul>
@@ -78,16 +78,44 @@
                         <li>Supprimer le compte</li>
                     </ul>
                 </div>
+            </div>
 
+            <div class="edit-mail-section section" style="display:none;">
+                <h3>Modification du mail</h3>
+
+                {{ form_start(editMailForm, { 'attr' : {'class' : 'base-form edit-mail-form' }}) }}
+                    {# {{ form_row(registrationForm.nom) }} #}
+                    {{ form_row(editMailForm.email) }}
+                    {{ form_row(editMailForm.password) }}
+
+                    <button type="button" class="btn mallow-medium submit inactive">Modifier le mail</button>
+                {{ form_end(editMailForm) }}
+            </div>
+
+            <div class="edit-password-section section" style="display:none;">
+                <h3>Modification du mot de passe</h3>
+
+                {{ form_start(editPasswordForm, { 'attr' : {'class' : 'base-form edit-password-form' }}) }}
+                    {{ form_row(editPasswordForm.currentPassword) }}
+                    {{ form_row(editPasswordForm.password.first) }}
+                    {{ form_row(editPasswordForm.password.second) }}
+
+                    <button type="button" class="btn mallow-medium submit inactive">Modifier le mot de passe</button>
+                {{ form_end(editPasswordForm) }}
             </div>
         </div>
 
-        <div class="add-project-popup popup popup-center">
+        <div id="add-project-popup" class="add-project-popup popup center" style="display:none">
             <div class="label-quit">
                 <span>Ajouter un projet</span>
-                <twig:ux:icon name="bi:x" />
+                <twig:ux:icon class="hide-popup-btn"name="bi:x" />
             </div>
+
+            <input type="text" placeholder="nom du projet">
+            <button class="add-project-btn mallow-medium btn inactive">Ajouter</button>
         </div>
+
+        <div class="blur-effect"></div>
 
         
 

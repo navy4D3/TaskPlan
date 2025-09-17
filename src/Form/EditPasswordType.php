@@ -44,7 +44,7 @@ class EditPasswordType extends AbstractType
                 ]],
                 'required' => true,
                 'first_options'  => [
-                    'label' => 'Mot de passe',
+                    'label' => 'Nouveau mot de passe',
                     'attr' => [
                         'placeholder' => '********',
                     ],

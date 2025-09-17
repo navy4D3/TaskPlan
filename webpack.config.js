@@ -26,6 +26,7 @@ Encore
     .addEntry('home', './assets/js/home.js')
     .addEntry('profil', './assets/js/profil.js')
 
+    .addStyleEntry('app-style', './assets/styles/app.scss')
     .addStyleEntry('home-style', './assets/styles/home.scss')
     .addStyleEntry('profil-style', './assets/styles/profil.scss')
 

@@ -41,6 +41,7 @@ class Project
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
+        $this->isClosed = false;
     }
 
     public function getId(): ?int

@@ -11,7 +11,7 @@ body {
     padding: 20px;
 }
 
-h1, h2, span {
+h1, h2, h3, span {
     color: $mallow-black;
 }
 
@@ -19,10 +19,19 @@ h1, h2, span {
     color: $mallow-white;
 }
 
-h1, span, label {
+h1, h2, h3, span, label {
     font-family: $poppins-title;
 }
 
+h2 {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+h3 {
+    font-size: 22px;
+    font-weight: bold;
+}
 
 p, label, span, input {
     font-size: 16px;
@@ -47,12 +56,47 @@ p, img, input {
     border-color: $red-soft;
 }
 
+.alert-success {
+    position: absolute;
+    top: 100px;
+    width: 90%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    z-index: 1000;
+}
+
+.errors-container {
+    display: flex;
+    flex-direction: column !important;
+    gap: 10px;
+    align-items: start !important;
+}
+
 .mobile-only {
     display: none !important;
 }
 
 .mobile-small-only {
     display: none !important;
+}
+
+.popup {
+    border-radius:20px;
+    background-color: $mallow-white;
+    padding: 40px;
+    
+}
+
+.blur-effect {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    
+    display: flex;
+    backdrop-filter: blur(5px);
+    z-index: 950;
+    width: 100%;
+    height: 100%;
 }
 
 .popup.center {
@@ -183,6 +227,41 @@ form {
     }
 }
 
+input {
+    padding: 10px 10px;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    color: $mallow-black;
+}
+
+.btn.mallow-medium {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: 10px;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+
+    background-color: $mallow-medium;
+
+    font-weight: 800;
+    font-size: 18px;
+
+    margin-top: 10px;
+
+    color: $mallow-white;
+
+}
+
+.btn.inactive {
+    pointer-events: none;
+    opacity: 75%;
+}
+
 .base-form {
     display: flex;
     flex-direction: column;
@@ -209,34 +288,10 @@ form {
             font-weight: 700;
         }
 
-        input {
-            padding: 15px 10px;
-            border: none;
-            border-radius: 10px;
-            width: 100%;
-            box-sizing: border-box; // ← Important si pas globalement défini
-            color: $mallow-black;
-        }
+        
     }
 
-    button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        border-radius: 10px;
-        padding: 15px;
-        border: none;
-        cursor: pointer;
-
-        background-color: $mallow-medium;
-
-        font-weight: 800;
-        font-size: 20px;
-
-        margin-top: 10px;
-
-    }
+    
 }
 
 .blur-effect {
@@ -250,3 +305,4 @@ form {
     width: 100%;
     height: 100%;
 }
+
