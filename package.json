@@ -30,5 +30,8 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "description": ""
+    "description": "",
+    "dependencies": {
+        "mongodb": "^6.20.0"
+    }
 }

@@ -16,14 +16,23 @@
     <div class="menu-and-details">
         <div class="menu">
             <div class="initials-name">
-                <span class="initials">{{ app.user.nom|slice(0,1) ~ app.user.prenom|slice(0,1)|upper }}</span>
-                <h1>{{ app.user.prenom|capitalize }} {{ app.user.nom|capitalize }}</h1>
+                <span class="initials">{{ app.user.prenom|slice(0,1) ~ app.user.nom|slice(0,1)|upper }}</span>
+                <h1 class="complete-name">{{ app.user.prenom|capitalize }} {{ app.user.nom|capitalize }}</h1>
             </div>
 
             <ul class="btns">
-                <li id="my-projects-btn" class="selected">Mes projets</li>
-                <li id="my-data-btn">Mes informations</li>
-                <li id="parameters-btn">Paramètres</li>
+                <li id="my-projects-btn" class="selected">
+                    <twig:ux:icon name="material-symbols:folder-rounded" />
+                    <span>Mes projets</span>
+                </li>
+                <li id="my-data-btn">
+                    <twig:ux:icon name="material-symbols:info-outline-rounded" />
+                    <span>Mes informations</span>
+                </li>
+                <li id="parameters-btn">
+                    <twig:ux:icon name="lucide:settings" />
+                    <span>Paramètres</span>
+                </li>
             </ul>
         </div>
 
@@ -36,7 +45,7 @@
 
                 <div class="projects" style="">
                     {% if app.user.projects is empty %}
-                        <p style="opacity:75%">Aucun projet en cours</p>
+                        <p style="opacity:75%" class="empty-projects-message">Aucun projet en cours</p>
                     {% else %}
                         {% for project in app.user.projects %}
                             <a href="project/{{ project.id }}" class="project">
@@ -75,7 +84,7 @@
 
                     <ul class="negative">
                         <a href="/logout"><li class="full">Deconnexion</li></a>
-                        <li>Supprimer le compte</li>
+                        <li class="show-delete-account-popup-btn" >Supprimer le compte</li>
                     </ul>
                 </div>
             </div>
@@ -113,6 +122,16 @@
 
             <input type="text" placeholder="nom du projet">
             <button class="add-project-btn mallow-medium btn inactive">Ajouter</button>
+        </div>
+
+        <div id="delete-account-popup" class="delete-account-popup popup center" style="display:none">
+            
+            <h4>Souhaitez-vous réellement supprimer votre compte ?</h4>
+            <div class="btns">
+                <a href="/delete-account" class="delete-account-btn mallow-medium btn">Confirmer</a>
+                <button class="hide-popup-btn btn underline">Annuler</button>
+            </div>
+            
         </div>
 
         <div class="blur-effect"></div>

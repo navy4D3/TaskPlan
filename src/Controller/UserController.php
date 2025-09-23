@@ -71,6 +71,10 @@ final class UserController extends AbstractController
             return new JsonResponse([
                 'status' => 'success',
                 'message' => 'Données utilisateur modifiées',
+                'user' => [
+                    'nom' => $form->get('nom')->getData(),
+                    'prenom' => $form->get('prenom')->getData(),
+                ]
             ]);
         }
 
@@ -167,6 +171,37 @@ final class UserController extends AbstractController
         }
 
         return new Response('Erreur inconnue');
+    }
+
+    #[Route('/delete-account', name: 'user_delete_account')]
+    public function deleteAccount(EntityManagerInterface $em, Security $security): JsonResponse|Response
+    {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Utilisateur non authentifié'
+            ], 403);
+        }
+    
+        try {
+            $em->remove($user);
+            $em->flush();
+    
+            // Déconnexion manuelle de l'utilisateur après suppression
+            $security->logout(false);
+    
+            return $this->redirectToRoute('home');
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Une erreur est survenue lors de la suppression du compte',
+                'details' => $e->getMessage()
+            ], 500);
+        }
+
+
     }
         
 }

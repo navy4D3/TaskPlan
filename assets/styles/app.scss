@@ -175,11 +175,13 @@ nav {
                 font-weight: bold;
                 font-size: 18px;
 
-                width: fit-content;
+                height: fit-content;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 aspect-ratio: 1/1;
+
+                text-transform: uppercase;
 
             }
 
@@ -306,3 +308,29 @@ input {
     height: 100%;
 }
 
+@media (max-width : 768px) {
+
+    nav .content {
+
+    }
+}
+
+@media (max-width: 512px) {
+    .popup {
+        padding: 20px;
+    }
+    .popup.center {
+        display: flex;
+        border-radius: 0px;
+        top: auto;
+        bottom: 0px;
+        transform: none;
+        left: 0px;
+        height: 60vh;
+        justify-content: start;
+        padding-top: 30px;
+
+    }
+
+    
+}

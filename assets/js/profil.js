@@ -70,6 +70,12 @@ addProjectBtn.addEventListener('click', function() {
             console.log("Projet créé :", data.project);
             // 👉 ici tu pourrais ajouter dynamiquement le projet à ta liste
 
+            const emptyProjectsMessage = document.querySelector('empty-projects-message')
+
+            if (emptyProjectsMessage) {
+                emptyProjectsMessage.style.display = "none";
+            }
+
             const projectDiv = document.createElement('a');
             projectDiv.classList.add('project');
             projectDiv.href = `/project/${data.project.id}`;
@@ -83,7 +89,9 @@ addProjectBtn.addEventListener('click', function() {
             // Ajout au conteneur
             projectsList.appendChild(projectDiv);
 
-            hidePopup(addProjectPopup)
+            hidePopup(addProjectPopup);
+
+
         } else {
             alert("Erreur : " + data.message);
         }
@@ -121,6 +129,22 @@ editDataBtn.addEventListener('click', function(){
     .then(data => {
             
         treatFormAlert(myDataForm, 'Données modifiés avec succès', data);
+
+        const initialsDivs = document.querySelectorAll('.initials');
+        const completeNameDivs = document.querySelectorAll('.complete-name');
+
+        if (data.status = 'success') {
+            initialsDivs.forEach(div => {
+                div.innerHTML = data.user.prenom[0] + data.user.nom[0];
+                
+            })
+
+            completeNameDivs.forEach(div => {
+                div.innerHTML = data.user.prenom + ' ' + data.user.nom;
+                
+            })
+        }
+        
 
         editDataBtn.style.display = "none";
 
@@ -243,6 +267,19 @@ editPasswordBtn.addEventListener('click', function (e) {
     })
     .catch(error => console.error("Erreur fetch:", error));
 });
+
+
+const showDeleteAccountPopupBtn = parametersSection.querySelector(".show-delete-account-popup-btn");
+const deleteAccountPopup = document.getElementById('delete-account-popup');
+const hideDeleteAccountPopupBtn = deleteAccountPopup.querySelector('.hide-popup-btn');
+
+showDeleteAccountPopupBtn.addEventListener('click', function() {
+    showPopup(deleteAccountPopup, 'flex');
+})
+
+hideDeleteAccountPopupBtn.addEventListener('click', () => {
+    hidePopup(deleteAccountPopup);
+})
 
 
 

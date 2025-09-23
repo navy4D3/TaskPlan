@@ -27,7 +27,7 @@ body {
             flex-direction: column;
             align-items: center;
             gap: 10px;
-            margin: 0px 30px;
+            margin: 0px 50px;
 
             .initials {
                 font-size: 28px;
@@ -44,6 +44,8 @@ body {
                 padding: 10px;
                 background:linear-gradient($mallow-black, $mallow-medium);
                 border-radius: 100px;
+
+                text-transform: uppercase;
 
                 
             }
@@ -63,17 +65,35 @@ body {
             list-style-type: none;
             gap: 20px;
             padding: 0px;
+            margin-bottom: 0px;
 
-            font-family: $poppins-title;
-            color: $mallow-medium-clean;
-            font-size: 18px;
-            white-space: nowrap;
+            li {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 5px;
+                opacity: 75%;
 
+                span {
+                    font-family: $poppins-title;
+                    color: $mallow-medium-clean;
+                    font-size: 18px;
+                    white-space: nowrap;
+                }
+    
+                svg {
+                    width: 25px;
+                    color: $mallow-medium-clean;
+                }
+            }
+            
+            
+            
             cursor: pointer;
 
             .selected {
                 font-weight: bold;
-                // margin-left: 10px;
+                opacity: 100%;
                 
             }
 
@@ -292,3 +312,160 @@ body {
     }
 }
 
+.delete-account-popup {
+    flex-direction: column;
+
+    h4 {
+        text-align: center;
+    }
+
+    .btns {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+
+        > * {
+            width: 50%;
+        }
+
+        .hide-popup-btn {
+            text-decoration: underline;
+        }
+    }
+
+}
+
+@media (max-width : 768px) {
+    
+    nav {
+        display: none;
+    }
+
+    body {
+        background: linear-gradient(to bottom, #D8DCFF 0%, #F7F7FF 20%) !important;
+    }
+    
+    .menu-and-details {
+        max-width: 100%;
+        flex-direction: column;
+        align-items: center;
+
+        .menu {
+            width: 100%;
+
+            .btns {
+                flex-direction: row;
+                justify-content: space-around;
+                width: 100%;
+                align-items: end;
+
+                li {
+                    flex-direction: column;
+
+                    svg {
+                        width: 40px;
+                        height: 40px;
+                    }
+                }
+            }
+        }
+
+        .section-details {
+            max-width: 100%;
+
+            .section {
+                .label-btn {
+                    flex-direction: column;
+
+                    button {
+                    width: 100%;
+                    justify-content: center;
+                    }
+                }
+
+                h2 {
+                    display: none;
+                    text-align: center;
+                    color: $mallow-medium-clean;
+                }
+
+                h3 {
+                    text-align: center;
+                }
+            }
+
+            .parameters-section {
+
+                .parameters {
+                    flex-direction: column;
+                    gap: 0px;
+
+                    ul {
+                        width: 100%;
+
+                        li {
+                            text-align: center;
+                        }
+                    }
+                }
+            }
+
+            .edit-mail-form, .edit-password-form {
+                > div {
+                    flex-direction: column;
+
+                    align-items: start;
+                }
+            }
+        }
+
+
+    }
+
+    
+}
+
+@media (max-width : 512px) {
+    
+    .menu-and-details {
+
+        .menu {
+
+            .btns {
+
+                li {
+                    span {
+                        display: none;
+                    }
+
+                    svg {
+                        width: 40px;
+                        height: 40px;
+                    }
+                }
+            }
+        }
+
+        .section-details {
+            max-width: 100%;
+
+            .label-btn {
+                button {
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+
+            .section {
+
+                h2 {
+                    display: block;
+                }
+            }
+        }
+
+        
+    }
+
+    
+}
