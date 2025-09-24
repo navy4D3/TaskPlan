@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Projet - TaskPlan{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('project-style') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('project') }}
+{% endblock %}
+
+{% block body %}
+    <div class="sections" data-project-id={{ project.id}}>
+        {% for section in sections %}
+            <div id="{{section.id}}" class="section">
+                <div class="header" style="background-color: {{ section.color.hex}}">
+                    <twig:ux:icon name="{{ section.icon.icon }}"  style="color: {{ section.color.textColor}}"/>
+                    <h2 style="color: {{ section.color.textColor}}">{{ section.title}}</h2>
+                </div>
+
+                <div class="tasks-list">
+                    {# <span class="task">Ceci est une tache de test</span> #}
+                    {% set sectionTasks = tasksBySection[section.id] %}
+                    {% if sectionTasks|length > 0 %}
+                        {% for task in sectionTasks %}
+                            <span class="task">{{ task.title }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="empty-tasks-message text-center opacity-50 w-100">Aucune tâche pour cette section</span>
+                    {% endif %}
+                    <button class="show-add-task-popup-btn btn outline-dotted" data-section-id="{{ section.id }}">
+                        <twig:ux:icon name="bi:plus-lg" />
+                        Ajouter
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="section add-section">
+            <div class="">
+                <twig:ux:icon name="bi:plus-lg" />
+                <h2>Ajouter une section</h2>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-task-popup" class="add-task-popup popup center" style="display:none">
+        <div class="label-quit">
+            <span>Ajouter une tâche</span>
+            <twig:ux:icon class="hide-popup-btn"name="bi:x" />
+        </div>
+
+        <input type="text" placeholder="Nom de la tâche">
+        <button class="add-task-btn mallow-medium btn inactive">Ajouter</button>
+    </div>
+
+    <div class="blur-effect"></div>
+
+
+{% endblock %}

@@ -70,7 +70,7 @@ addProjectBtn.addEventListener('click', function() {
             console.log("Projet créé :", data.project);
             // 👉 ici tu pourrais ajouter dynamiquement le projet à ta liste
 
-            const emptyProjectsMessage = document.querySelector('empty-projects-message')
+            const emptyProjectsMessage = document.querySelector('.empty-projects-message')
 
             if (emptyProjectsMessage) {
                 emptyProjectsMessage.style.display = "none";
@@ -90,6 +90,7 @@ addProjectBtn.addEventListener('click', function() {
             projectsList.appendChild(projectDiv);
 
             hidePopup(addProjectPopup);
+            addProjectInput.value = "";
 
 
         } else {
@@ -99,7 +100,7 @@ addProjectBtn.addEventListener('click', function() {
     .catch(error => console.error("Erreur fetch:", error));
 
     // clear l'input après l’envoi
-    addProjectInput.value = "";
+    
 })
 
 

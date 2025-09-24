@@ -23,12 +23,13 @@ class Task
     #[ORM\Column]
     private ?bool $isDone = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $sectionId = null;
-
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
+
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Section $section = null;
 
     public function getId(): ?int
     {
@@ -71,18 +72,6 @@ class Task
         return $this;
     }
 
-    public function getSectionId(): ?string
-    {
-        return $this->sectionId;
-    }
-
-    public function setSectionId(string $sectionId): static
-    {
-        $this->sectionId = $sectionId;
-
-        return $this;
-    }
-
     public function getProject(): ?Project
     {
         return $this->project;
@@ -91,6 +80,18 @@ class Task
     public function setProject(?Project $project): static
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    public function getSection(): ?Section
+    {
+        return $this->section;
+    }
+
+    public function setSection(?Section $section): static
+    {
+        $this->section = $section;
 
         return $this;
     }

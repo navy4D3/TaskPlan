@@ -25,10 +25,12 @@ Encore
     .addEntry('app', './assets/app.js')
     .addEntry('home', './assets/js/home.js')
     .addEntry('profil', './assets/js/profil.js')
+    .addEntry('project', './assets/js/project.js')
 
     .addStyleEntry('app-style', './assets/styles/app.scss')
     .addStyleEntry('home-style', './assets/styles/home.scss')
     .addStyleEntry('profil-style', './assets/styles/profil.scss')
+    .addStyleEntry('project-style', './assets/styles/project.scss')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

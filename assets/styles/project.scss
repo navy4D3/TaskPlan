@@ -1,0 +1,136 @@
+@import 'variables.scss';
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: $mallow-white;
+}
+.sections {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: start;
+    overflow-x: auto;
+    padding-top: 40px;
+    gap: 20px;
+    height: 100%;
+
+    .section {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        min-width: 300px;
+        height: 100%;
+
+
+        .header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: start;
+
+            gap: 10px;
+            width: 100%;
+            border-radius: 10px;
+
+            padding: 10px;
+
+            svg {
+                width: 30px;
+                height: 30px;
+            }
+
+            h2 {
+                margin: 0px;
+            }
+        }
+
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+
+            border-radius: 10px;
+            background-color: $mallow-medium-white-50;
+
+            padding: 10px;
+            align-items: start;
+
+            .task {
+                padding: 10px;
+                border-radius: 5px;
+
+                background-color: $mallow-medium-white;
+                width: 100%;
+
+            }
+
+            .btn.outline-dotted {
+                padding: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                margin-top: 10px;
+
+                width: 100%;
+
+                border: dotted 2px $mallow-medium;
+                border-radius: 10px;
+
+                font-weight: bold;
+
+                color: $mallow-medium;
+
+                svg {
+                    height: 20px;
+                    width: 20px;
+                    color: $mallow-medium;
+
+                    * {
+                        stroke: $mallow-medium;
+                        stroke-width: 1px;
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    .section.todo {
+        .header {
+            background-color: $mallow-medium;
+            
+            * {
+                color: $mallow-white;
+            }
+
+            svg * {
+                stroke: $mallow-white;
+                stroke-width: 0.5px;
+            }
+        }
+    }
+
+    .section.current .header {
+        background-color: $yellow-soft;
+
+        svg * {
+            stroke: $mallow-medium;
+            stroke-width: 3px;
+        }
+    }
+
+    .section.done .header {
+        background-color: $green-soft;
+
+        svg * {
+            stroke: $mallow-medium;
+            stroke-width: 1px;
+        }
+    }
+}
