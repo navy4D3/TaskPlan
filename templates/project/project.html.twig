@@ -26,7 +26,7 @@
                     {% set sectionTasks = tasksBySection[section.id] %}
                     {% if sectionTasks|length > 0 %}
                         {% for task in sectionTasks %}
-                            <span class="task">{{ task.title }}</span>
+                            <span class="task" data-task-id="{{task.id}}">{{ task.title }}</span>
                         {% endfor %}
                     {% else %}
                         <span class="empty-tasks-message text-center opacity-50 w-100">Aucune tâche pour cette section</span>
@@ -55,6 +55,63 @@
 
         <input type="text" placeholder="Nom de la tâche">
         <button class="add-task-btn mallow-medium btn inactive">Ajouter</button>
+    </div>
+
+    <div class="task-popup popup center" style="display:none">
+        <div class="header">
+            <button class="end-task-btn btn mallow-medium">
+                <twig:ux:icon name="bi:check-lg" />
+                Terminer la tâche
+            </button>
+
+            <div class="close-delete-btns">
+                <twig:ux:icon class="delete-task-btn trash-icon" name="tabler:trash" />
+                <twig:ux:icon class="close-popup-btn" name="bi:x-lg" />
+            </div>
+        </div>
+
+        <div class="labels">
+            {# completer pour ajouter les labels rattaché à la tache #}
+        </div>
+
+        <div class="title-description">
+            <h3 class="title">Titre</h3>
+
+            <input class="description" type="text" placeholder="Description de la tâche">
+        </div>
+
+        <div class="checklist">
+            <h4>Checklist</h4>
+
+            <div class="checklist-list">
+                <div class="checklist">
+                    <div class="radio-icon">
+                        <div class="selected" style="display:none">
+                        </div>
+                    </div>
+                    <span>Exemple de checklist</span>
+                </div>
+                
+                <div class="add-checklist-input" style="display:none">
+                    <div class="radio-icon">
+                        <div class="selected" style="display:none">
+                        </div>
+                    </div>
+                    <input type="text">
+                </div>
+
+                {# list des checklists #}
+                <div class="add-checklist-btn ">
+                    <twig:ux:icon name="bi:plus-lg" />
+                    <button class="add-checklist-label">Ajouter</button>
+                </div>
+            </div>
+            
+            
+            
+        </div>
+
+        
     </div>
 
     <div class="blur-effect"></div>

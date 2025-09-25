@@ -62,6 +62,7 @@ body {
             .task {
                 padding: 10px;
                 border-radius: 5px;
+                cursor: pointer;
 
                 background-color: $mallow-medium-white;
                 width: 100%;
@@ -132,5 +133,149 @@ body {
             stroke: $mallow-medium;
             stroke-width: 1px;
         }
+    }
+}
+
+.task-popup {
+    min-width: 60%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0px 0px 10px $mallow-medium-25;
+
+    .header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        .end-task-btn {
+            width: fit-content;
+            gap: 10px;
+        }
+
+        .close-delete-btns {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+
+            * {
+                cursor: pointer;
+            }
+        }
+
+        .trash-icon {
+            color: $red-soft;
+        }
+
+        .close-popup-btn {
+            color: $mallow-medium-black;
+            height: 22px;
+            width: 22px;
+
+            * {
+                stroke: $mallow-black;
+                stroke-width: 1px;
+            }
+        }
+
+
+    }
+
+    .checklist {
+        display: flex;
+        flex-direction: column;
+        // gap: 10px;
+
+        &-list {
+            display: flex;
+            flex-direction: column;
+            // gap: 10px;
+
+            
+
+            .checklist {
+                display: flex;
+                flex-direction: row;
+                gap: 5px;
+                align-items: center;
+                padding: 5px;
+
+                margin-left: 5px;
+
+                span {
+                    font-weight: lighter;
+                }
+            }
+
+            .add-checklist-input {
+                display: flex;
+                flex-direction: row;
+                gap: 5px;
+                align-items: center;
+                position: relative;
+    
+                input {
+                    padding: 5px;
+                    border-radius: 10px;
+                    background-color: $mallow-medium-white-50;
+                    padding-left: 35px;
+                    font-weight: lighter;
+                    
+                }
+
+                input:focus {
+                    // outline-color: $mallow-medium-50;
+                    outline: none;
+                }
+    
+                .radio-icon {
+                    position: absolute;
+                    left: 10px;
+                    top: 50%;
+                    transform: translate(0, -50%);
+                }
+            }
+    
+            .add-checklist-btn {
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+                padding: 0px;
+                margin-left: 10px;
+                margin-top: 5px;
+                
+                // font-weight: bold;
+                align-items: center;
+    
+                button {
+                    padding: 0px;
+                    color: $mallow-medium;
+                    background: none;
+                    border: none;
+                    font-size: 18px;
+                }
+    
+                svg {
+                    color: $mallow-medium;
+                    width: 20px;
+                    height: 20px;
+    
+                    * {
+                        stroke: $mallow-medium;
+                        stroke-width: 1px;
+                    }
+                }
+    
+            }
+        }
+        
+        
+    }
+
+    svg {
+        width: 25px;
+        height: 25px;
     }
 }

@@ -14,11 +14,24 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class TaskController extends AbstractController
 {
-    #[Route('/task', name: 'app_task')]
-    public function index(): Response
-    {
-        return $this->render('task/index.html.twig', [
-            'controller_name' => 'TaskController',
+    #[Route('/task/{id}', name: 'update_task')]
+    public function updateTask($id, Request $request, EntityManagerInterface $em): JsonResponse {
+
+        $task = $em->getRepository(Task::class)->find($id);
+
+        if (!$task) {
+            return new JsonResponse(['error' => 'Tâche introuvable'], 404);
+        }
+
+        $em->persist($task);
+        $em->flush();
+
+        // completer pour recuperer la liste des checklists
+
+        return new JsonResponse([
+            'id' => $task->getId(),
+            'title' => $task->getTitle(),
+            'description' => $task->getDescription(),
         ]);
     }
 
@@ -52,4 +65,25 @@ final class TaskController extends AbstractController
             ]
         ]);
     }
+
+    #[Route('/delete-task/{id}', name: 'delete_task', methods: ['POST'])]
+    public function deleteTask(int $id, EntityManagerInterface $em): JsonResponse
+    {
+        $task = $em->getRepository(Task::class)->find($id);
+
+        if (!$task) {
+            return new JsonResponse(['error' => 'Tâche introuvable'], 404);
+        }
+
+        $em->remove($task);
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Tâche supprimée avec succès',
+            'id' => $id,
+        ]);
+    }
+
+
 }
