@@ -10,34 +10,43 @@
 {% block javascripts %}
     {{ parent() }}
     {{ encore_entry_script_tags('project') }}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        
+    </script>
 {% endblock %}
 
 {% block body %}
-    <div class="sections" data-project-id={{ project.id}}>
-        {% for section in sections %}
-            <div id="{{section.id}}" class="section">
-                <div class="header" style="background-color: {{ section.color.hex}}">
-                    <twig:ux:icon name="{{ section.icon.icon }}"  style="color: {{ section.color.textColor}}"/>
-                    <h2 style="color: {{ section.color.textColor}}">{{ section.title}}</h2>
-                </div>
+    <div  class="sections" data-project-id={{ project.id}}>
+        <div id="sections-list">
+            {% for section in sections %}
+                <div data-section-id="{{section.id}}" class="section">
+                    <div class="header" style="background-color: {{ section.color.hex}}">
+                        <twig:ux:icon name="{{ section.icon.icon }}"  style="color: {{ section.color.textColor}}"/>
+                        <h2 style="color: {{ section.color.textColor}}">{{ section.title}}</h2>
+                    </div>
 
-                <div class="tasks-list">
-                    {# <span class="task">Ceci est une tache de test</span> #}
-                    {% set sectionTasks = tasksBySection[section.id] %}
-                    {% if sectionTasks|length > 0 %}
-                        {% for task in sectionTasks %}
-                            <span class="task" data-task-id="{{task.id}}">{{ task.title }}</span>
-                        {% endfor %}
-                    {% else %}
-                        <span class="empty-tasks-message text-center opacity-50 w-100">Aucune tâche pour cette section</span>
-                    {% endif %}
-                    <button class="show-add-task-popup-btn btn outline-dotted" data-section-id="{{ section.id }}">
-                        <twig:ux:icon name="bi:plus-lg" />
-                        Ajouter
-                    </button>
+                    <div class="tasks">
+                        {# <span class="task">Ceci est une tache de test</span> #}
+                        <div class="tasks-list">    
+                            {% set sectionTasks = tasksBySection[section.id] %}
+                            {% if sectionTasks|length > 0 %}
+                                {% for task in sectionTasks %}
+                                    <span class="task" data-task-id="{{task.id}}">{{ task.title }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="empty-tasks-message text-center opacity-50 w-100">Aucune tâche pour cette section</span>
+                            {% endif %}
+                        </div>
+                        
+                        <button class=" tasks-btn show-add-task-popup-btn btn outline-dotted" data-section-id="{{ section.id }}">
+                            <twig:ux:icon name="bi:plus-lg" />
+                            Ajouter
+                        </button>
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
 
         <div class="section add-section">
             <div class="">
@@ -80,7 +89,7 @@
             <input class="description" type="text" placeholder="Description de la tâche">
         </div>
 
-        <div class="checklist">
+        <div class="checklist-section">
             <h4>Checklist</h4>
 
             <div class="checklist-list">
