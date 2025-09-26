@@ -55,6 +55,32 @@ class Checklist
         return $this;
     }
 
+    public function getItem(string $content): ?array
+    {
+        foreach ($this->items as $item) {
+            if ($item['content'] === $content) {
+                return $item;
+            }
+        }
+
+        return null;
+    }
+
+    public function setItem(int $position, string $content, ?bool $isDone = null): self
+    {
+        if (!isset($this->items[$position])) {
+            throw new \InvalidArgumentException("L'item à la position {$position} n'existe pas.");
+        }
+
+        $this->items[$position]['content'] = $content;
+
+        if ($isDone !== null) {
+            $this->items[$position]['isDone'] = $isDone;
+        }
+
+        return $this;
+    }
+
     public function removeItem(string $content): self
     {
         $this->items = array_filter($this->items, fn($i) => $i['content'] !== $content);

@@ -31,6 +31,9 @@ class Task
     #[ORM\JoinColumn(nullable: false)]
     private ?Section $section = null;
 
+    #[ORM\Column]
+    private ?int $position = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -92,6 +95,18 @@ class Task
     public function setSection(?Section $section): static
     {
         $this->section = $section;
+
+        return $this;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->position = $position;
 
         return $this;
     }

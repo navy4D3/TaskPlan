@@ -12,7 +12,11 @@ doctrine_mongodb:
             mappings:
                 App:
                     dir: '%kernel.project_dir%/src/Document'
+                    mapping: true
+                    type: attribute
                     prefix: 'App\Document'
+                    is_bundle: false
+                    alias: App
 
 when@prod:
     doctrine_mongodb:

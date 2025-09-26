@@ -41,7 +41,7 @@ class Project
     /**
      * @var Collection<int, Section>
      */
-    #[ORM\ManyToMany(targetEntity: Section::class, inversedBy: 'projects')]
+    #[ORM\OneToMany(targetEntity: Section::class, mappedBy: 'project', orphanRemoval: true)]
     private Collection $sections;
 
     public function __construct()

@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Document\Checklist;
 use App\Entity\Project;
 use App\Entity\Section;
 use App\Entity\Task;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,8 +17,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class TaskController extends AbstractController
 {
-    #[Route('/task/{id}', name: 'update_task')]
-    public function updateTask($id, Request $request, EntityManagerInterface $em): JsonResponse {
+    #[Route('/task/get-data/{id}', name: 'task_get_data')]
+    public function updateTask(string $id, Request $request, EntityManagerInterface $em, DocumentManager $dm): JsonResponse {
 
         $task = $em->getRepository(Task::class)->find($id);
 
@@ -23,8 +26,12 @@ final class TaskController extends AbstractController
             return new JsonResponse(['error' => 'Tâche introuvable'], 404);
         }
 
-        $em->persist($task);
-        $em->flush();
+        $checklist = $dm->getRepository(Checklist::class)->findOneBy(['taskId' => $id]);
+
+        $checklistArray = $checklist ? [
+            'id' => $checklist->getId(),
+            'items' => $checklist->getItems(),
+        ] : [];
 
         // completer pour recuperer la liste des checklists
 
@@ -32,6 +39,7 @@ final class TaskController extends AbstractController
             'id' => $task->getId(),
             'title' => $task->getTitle(),
             'description' => $task->getDescription(),
+            'checklist' => $checklistArray
         ]);
     }
 
@@ -48,13 +56,19 @@ final class TaskController extends AbstractController
         }
 
         $task = new Task();
-        $task->setTitle($data['title']);
-        $task->setProject($em->getRepository(Project::class)->find($data['projectId']));
+        $currentProject = $em->getRepository(Project::class)->find($data['projectId']);
 
+        $task->setTitle($data['title']);
+        $task->setProject($currentProject);
+        
         $task->setSection($em->getRepository(Section::class)->find($data['sectionId']));
         $task->setIsDone(false);
+        $task->setPosition(count($currentProject->getTasks()));
+
+        
         
         $em->persist($task);
+
         $em->flush();
 
         return new JsonResponse([
@@ -84,6 +98,105 @@ final class TaskController extends AbstractController
             'id' => $id,
         ]);
     }
+
+    #[Route('/reorder-tasks', name: 'task_reorder', methods: ['POST'])]
+    public function reorderTasks(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $order = $data['order'] ?? [];
+
+        foreach ($order as $position => $taskId) {
+            $task = $em->getRepository(Task::class)->find($taskId);
+
+            if (!$task) {
+                return new JsonResponse(
+                    ['error' => 'Tâche introuvable dans reorder'],
+                    JsonResponse::HTTP_NOT_FOUND
+                );
+            }
+            
+            $task->setPosition($position);
+        }
+
+        $em->flush();
+        return new JsonResponse(['success' => true]);
+    }
+
+
+    #[Route('/task/{taskId}/checklist', name: 'get_checklist', methods: ['GET'])]
+    public function getChecklist(string $taskId, DocumentManager $dm): JsonResponse
+    {
+        $checklists = $dm->getRepository(Checklist::class)->findBy(['taskId' => $taskId]);
+
+        $result = array_map(fn(Checklist $c) => [
+            'id' => $c->getId(),
+            'items' => $c->getItems()
+        ], $checklists);
+
+        return new JsonResponse($result);
+    }
+
+    #[Route('/task/{taskId}/checklist/add/{text}', name: 'add_checklist')]
+    public function addChecklist(string $taskId, string $text, DocumentManager $dm): JsonResponse
+    {
+
+        $checklist = $dm->getRepository(Checklist::class)->findOneBy(['taskId' => $taskId]);
+
+        if (!$checklist) {
+            $checklist = new Checklist();
+            $checklist->setTaskId($taskId);
+        }
+
+        $item = $checklist->getItem($text);
+
+        if (!$item) {
+            $checklist->addItem($text);
+            $dm->persist($checklist);
+            $dm->flush();
+        }
+        
+        
+
+        // $result = array_map(fn(Checklist $c) => [
+        //     'id' => $c->getId(),
+        //     'items' => $c->getItems()
+        // ], $checklists);
+
+        return new JsonResponse([
+            'status' => 'success',
+            'message' => 'Ajout réussi',
+            'items' => $checklist->getItems()
+        ]);
+    }
+
+    #[Route('/task/move', name: 'task_move', methods: ['POST'])]
+    public function moveTask(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['newSectionId'], $data['order'])) {
+            return new JsonResponse(['error' => 'Données invalides'], 400);
+        }
+    
+        $section = $em->getRepository(Section::class)->find($data['newSectionId']);
+        if (!$section) {
+            return new JsonResponse(['error' => 'Section introuvable'], 404);
+        }
+    
+        foreach ($data['order'] as $position => $taskId) {
+            $task = $em->getRepository(Task::class)->find($taskId);
+            if ($task) {
+                $task->setPosition($position);
+                $task->setSection($section); // important pour les déplacements inter-sections
+            }
+        }
+    
+        $em->flush();
+    
+        return new JsonResponse(['status' => 'ok']);
+    }
+
+
 
 
 }

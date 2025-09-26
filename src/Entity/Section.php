@@ -26,11 +26,14 @@ class Section
     #[ORM\Column(enumType: SectionColor::class)]
     private ?SectionColor $color = null;
 
-    /**
-     * @var Collection<int, Project>
-     */
-    #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'sections')]
-    private Collection $projects;
+    // /**
+    //  * @var Collection<int, Project>
+    //  */
+    // #[ORM\ManyToOne(targetEntity: Project::class, inversedBy: 'tasks')]
+    // private Collection $projects;
+    #[ORM\ManyToOne(inversedBy: 'sections')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Project $project = null;
 
     /**
      * @var Collection<int, Task>
@@ -43,7 +46,7 @@ class Section
 
     public function __construct()
     {
-        $this->projects = new ArrayCollection();
+        // $this->projects = new ArrayCollection();
         $this->tasks = new ArrayCollection();
     }
 
@@ -88,32 +91,44 @@ class Section
         return $this;
     }
 
-    /**
-     * @return Collection<int, Project>
-     */
-    public function getProjects(): Collection
+    public function getProject(): ?Project
     {
-        return $this->projects;
+        return $this->project;
     }
 
-    public function addProject(Project $project): static
+    public function setProject(?Project $project): static
     {
-        if (!$this->projects->contains($project)) {
-            $this->projects->add($project);
-            $project->addSection($this);
-        }
+        $this->project = $project;
 
         return $this;
     }
 
-    public function removeProject(Project $project): static
-    {
-        if ($this->projects->removeElement($project)) {
-            $project->removeSection($this);
-        }
+    // /**
+    //  * @return Collection<int, Project>
+    //  */
+    // public function getProjects(): Collection
+    // {
+    //     return $this->projects;
+    // }
 
-        return $this;
-    }
+    // public function addProject(Project $project): static
+    // {
+    //     if (!$this->projects->contains($project)) {
+    //         $this->projects->add($project);
+    //         $project->addSection($this);
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function removeProject(Project $project): static
+    // {
+    //     if ($this->projects->removeElement($project)) {
+    //         $project->removeSection($this);
+    //     }
+
+    //     return $this;
+    // }
 
     /**
      * @return Collection<int, Task>

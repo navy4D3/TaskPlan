@@ -32,10 +32,13 @@ final class ProjectController extends AbstractController
         $tasksBySection = [];
 
         foreach ($project->getSections() as $section) {
-            $tasksBySection[$section->getId()] = $em->getRepository(Task::class)->findBy([
-                'project' => $project,
-                'section' => $section
-            ]);
+            $tasksBySection[$section->getId()] = $em->getRepository(Task::class)->findBy(
+                [
+                    'project' => $project,
+                    'section' => $section
+                ],
+                ['position' => 'ASC']
+            );
         }
 
         return $this->render('project/project.html.twig', [
@@ -68,21 +71,18 @@ final class ProjectController extends AbstractController
         ];
     
         foreach ($defaultSections as $sectionData) {
-            $section = $em->getRepository(Section::class)->findOneBy($sectionData);
     
-            if (!$section) {
-                $section = new Section();
+            $section = new Section();
 
-                $section->setPosition($sectionData['position']);
-                $section->setTitle($sectionData['title']);
-                $section->setColor($sectionData['color']);
-                $section->setIcon($sectionData['icon']);
+            $section->setPosition($sectionData['position']);
+            $section->setTitle($sectionData['title']);
+            $section->setColor($sectionData['color']);
+            $section->setIcon($sectionData['icon']);
+            $section->setProject($project);
 
-                $em->persist($section);
-            }
+            $em->persist($section);
     
             $project->addSection($section);
-
             
         }
         
@@ -96,5 +96,23 @@ final class ProjectController extends AbstractController
                 'title' => $project->getTitle()
             ]
         ]);
+    }
+
+    #[Route('/sections/reorder', name: 'sections_reorder', methods: ['POST'])]
+    public function reorderSections(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $order = $data['order'] ?? [];
+
+        foreach ($order as $position => $sectionId) {
+            $section = $em->getRepository(Section::class)->find($sectionId);
+            if ($section) {
+                $section->setPosition($position);
+            }
+        }
+
+        $em->flush();
+
+        return new JsonResponse(['success' => true]);
     }
 }

@@ -1,5 +1,30 @@
 const { showPopup, hidePopup, sanitizeInput, treatFormAlert, showSuccessAlert } = require("../app");
 
+const sectionsContainer = document.getElementById('sections-list');
+
+if (sectionsContainer) {
+    new Sortable(sectionsContainer, {
+        animation: 150,
+        handle: '.header', // <-- le drag se fait uniquement via .header
+        onEnd: function (evt) {
+            const order = Array.from(sectionsContainer.children)
+                .map(el => el.dataset.sectionId);
+
+            // Envoi AJAX vers Symfony pour sauvegarder l'ordre
+            fetch('/sections/reorder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ order })
+            }).then(res => res.json())
+                .then(data => console.log('Sections réordonnées', data));
+        }
+    });
+}
+
+
 const profilShowAddTaskPopupBtns = document.querySelectorAll(".show-add-task-popup-btn");
 const addTaskPopup = document.getElementById('add-task-popup');
 const addTaskBtn = addTaskPopup.querySelector('.add-task-btn');
@@ -65,18 +90,17 @@ addTaskBtn.addEventListener('click', function() {
         if (data.success) {
             console.log("Tâche créé :", data.task);
 
-            const currentSection = document.getElementById(currentSectionId);
+            const currentSection = document.querySelector(`[data-section-id="${currentSectionId}"]`);
             const currentTaskList = currentSection.querySelector(".tasks-list");
             const emptyTasksMessage = currentSection.querySelector('.empty-tasks-message');
 
             if (emptyTasksMessage) {
-                emptyTasksMessage.style.display = "none";
+                emptyTasksMessage.remove();
             }
 
             const taskDiv = document.createElement('span');
             taskDiv.classList.add('task');
             taskDiv.dataset.taskId = data.task.id;
-            // taskDiv.href = `/task/${data.task.id}`;
             taskDiv.textContent = data.task.title;
 
             // Ajout au conteneur
@@ -109,7 +133,7 @@ tasks.forEach(task => {
 })
 
 function initTaskDataAndShowPopup(taskId) {
-    fetch('/task/' + taskId, {
+    fetch('/task/get-data/' + taskId, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -122,6 +146,18 @@ function initTaskDataAndShowPopup(taskId) {
         taskPopup.querySelector('.description').value = data.description;
         taskPopup.dataset.taskId = data.id;
 
+        const previousChecks = taskPopup.querySelectorAll('.checklist');
+
+        previousChecks.forEach(check => check.remove());
+        console.log(data.checklist.items);
+
+        if (data.checklist.items !== undefined) {
+            data.checklist.items.forEach(check => {
+                console.log(check.content);
+                addChecklistOnFront(check.content);
+            })
+        }
+        
         showPopup(taskPopup, 'flex');
 
         // const taskChecklists = data.checklists;
@@ -134,6 +170,7 @@ function initTaskDataAndShowPopup(taskId) {
 
 
     })
+    .catch(error => console.error("Erreur fetch:", error));
 }
 
 function initTaskEvent(taskNode) {
@@ -153,6 +190,9 @@ addChecklistBtn.addEventListener('click', function() {
 })
 
 addChecklistInput.addEventListener('keydown', function(event) {
+    
+    const currentTaskId = parseInt(taskPopup.dataset.taskId);
+
     if (event.key === 'Enter') {
         event.preventDefault(); // Empêche un éventuel submit de formulaire
         
@@ -160,7 +200,25 @@ addChecklistInput.addEventListener('keydown', function(event) {
         const text = addChecklistInput.querySelector('input').value.trim();
         if (text === "") return; // Ne rien faire si vide
 
-        addChecklistOnFront(text);
+        fetch(`/task/${currentTaskId}/checklist/add/${text}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+
+
+            addChecklistOnFront(text);
+    
+        })
+        .catch(error => console.error("Erreur fetch:", error));
+
+        
+
+
         // Crée le bloc checklist
         
     }
@@ -220,3 +278,41 @@ function deleteTask(taskId) {
         console.error("Erreur lors de la suppression :", error);
     });
 }
+
+document.querySelectorAll('.tasks-list').forEach(list => {
+    new Sortable(list, {
+        group: "shared-tasks", //permet le drag entre plusieurs sections
+        animation: 150,
+        onEnd: function (evt) {
+            // const order = Array.from(evt.to.children).map(el => el.dataset.taskId);
+    
+            // fetch('/reorder-tasks', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ order })
+            //   });
+
+            const taskId = evt.item.dataset.taskId;
+            const newSectionId = evt.to.closest(".section").dataset.sectionId;
+
+            // ordre des tâches dans la nouvelle section
+            const order = Array.from(evt.to.children).map(el => el.dataset.taskId);
+
+            fetch("/task/move", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    taskId: taskId,
+                    newSectionId: newSectionId,
+                    order: order
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Task moved:", data);
+            });
+
+        }
+    });
+})
+
