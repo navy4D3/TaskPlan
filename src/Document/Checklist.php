@@ -55,10 +55,10 @@ class Checklist
         return $this;
     }
 
-    public function getItem(string $content): ?array
+    public function getItem(int $position): ?array
     {
         foreach ($this->items as $item) {
-            if ($item['content'] === $content) {
+            if ($item['position'] === $position) {
                 return $item;
             }
         }
@@ -81,9 +81,9 @@ class Checklist
         return $this;
     }
 
-    public function removeItem(string $content): self
+    public function removeItem(int $position): self
     {
-        $this->items = array_filter($this->items, fn($i) => $i['content'] !== $content);
+        $this->items = array_filter($this->items, fn($i) => $i['position'] !== $position);
         $this->items = array_values($this->items);
 
         // Recalculer les positions
@@ -112,16 +112,19 @@ class Checklist
     public function reorderItems(array $newOrder): self
     {
         $orderedItems = [];
-        foreach ($newOrder as $index => $content) {
-            foreach ($this->items as $item) {
-                if ($item['content'] === $content) {
-                    $item['position'] = $index;
-                    $orderedItems[] = $item;
-                    break;
-                }
+
+        foreach ($newOrder as $newPosition => $oldPosition) {
+            if (isset($this->items[$oldPosition])) {
+                $item = $this->items[$oldPosition];
+                $item['position'] = $newPosition; // mise à jour de la position
+                $orderedItems[$newPosition] = $item;
             }
         }
-        $this->items = $orderedItems;
+
+        // On réindexe le tableau proprement
+        ksort($orderedItems);
+        $this->items = array_values($orderedItems);
+
         return $this;
     }
 

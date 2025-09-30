@@ -107,19 +107,23 @@ export function showErrors(alerts) {
     alert.innerHTML = message;
 }
 
-const radioIcons = document.querySelectorAll('.radio-icon');
 
-if (radioIcons.length > 0) {
-    radioIcons.forEach(radio => {
-        radio.addEventListener('click', function() {
-            
-            const innerRadio = radio.querySelector('.selected');
 
-            if (innerRadio.style.display == "none") {
-                innerRadio.style.display = "block";
-            } else {
-                innerRadio.style.display = "none";
-            }
+export function initRadioBtnsEvent() {
+    const radioIcons = document.querySelectorAll('.radio-icon');
+
+    if (radioIcons.length > 0) {
+        radioIcons.forEach(radio => {
+            radio.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const innerRadio = radio.querySelector('.selected');
+
+                if (innerRadio.style.display == "none") {
+                    innerRadio.style.display = "block";
+                } else {
+                    innerRadio.style.display = "none";
+                }
+            })
         })
-    })
+    }
 }

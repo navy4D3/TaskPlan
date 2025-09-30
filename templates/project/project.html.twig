@@ -35,7 +35,7 @@
                                     <span class="task" data-task-id="{{task.id}}">{{ task.title }}</span>
                                 {% endfor %}
                             {% else %}
-                                <span class="empty-tasks-message text-center opacity-50 w-100">Aucune tâche pour cette section</span>
+                                <span class="empty-tasks-message text-center opacity-50 w-100" data-task-id="0">Aucune tâche pour cette section</span>
                             {% endif %}
                         </div>
                         
@@ -94,19 +94,24 @@
 
             <div class="checklist-list">
                 <div class="checklist">
-                    <div class="radio-icon">
-                        <div class="selected" style="display:none">
+                    <div class="left">
+                        <div class="radio-icon">
+                            <div class="selected" style="display:none">
+                            </div>
                         </div>
+                        <span>Exemple de checklist</span>
                     </div>
-                    <span>Exemple de checklist</span>
+                    
                 </div>
                 
                 <div class="add-checklist-input" style="display:none">
-                    <div class="radio-icon">
-                        <div class="selected" style="display:none">
+                    <div class="left">
+                        <div class="radio-icon">
+                            <div class="selected" style="display:none">
+                            </div>
                         </div>
+                        <input type="text">
                     </div>
-                    <input type="text">
                 </div>
 
                 {# list des checklists #}

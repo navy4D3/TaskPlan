@@ -200,6 +200,17 @@ body {
 
     }
 
+    .title-description {
+        .description {
+            
+        }
+
+        .description:focus {
+            outline: 2px solid $mallow-medium-50;
+            // outline-width: 2px;
+        }
+    }
+
     .checklist-section {
         display: flex;
         flex-direction: column;
@@ -217,29 +228,62 @@ body {
                 flex-direction: row;
                 gap: 5px;
                 align-items: center;
+                justify-content: space-between;
                 padding: 5px;
 
                 margin-left: 5px;
+                cursor: pointer;
 
-                span {
-                    font-weight: lighter;
+                border-radius: 10px;
+
+                .left {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 5px;
+                    align-items: center;
+
+                    span {
+                        font-weight: lighter;
+                        cursor: text;
+                    }
                 }
+
+                svg {
+                    opacity: 50%;
+                    color: $mallow-medium;
+                }
+
+                
+            }
+
+            .checklist:hover, .add-checklist-input:hover {
+                background-color: $mallow-medium-white-50;
             }
 
             .add-checklist-input {
                 display: flex;
                 flex-direction: row;
-                gap: 5px;
-                align-items: center;
+                justify-content: space-between;
                 position: relative;
-    
-                input {
-                    padding: 5px;
-                    border-radius: 10px;
-                    background-color: $mallow-medium-white-50;
-                    padding-left: 35px;
-                    font-weight: lighter;
-                    
+                padding: 5px;
+                border-radius: 10px;
+                background-color: $mallow-medium-white-50;
+
+                .left {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 5px;
+                    gap: 5px;
+                    align-items: center;
+
+                    input {
+                        padding: 0px;
+                        border-radius: 10px;
+                        background-color: transparent;
+                        padding-left: 30px;
+                        font-weight: lighter;
+                        
+                    }
                 }
 
                 input:focus {
@@ -253,6 +297,12 @@ body {
                     top: 50%;
                     transform: translate(0, -50%);
                 }
+
+                svg {
+                    opacity: 50%;
+                    color: $mallow-medium;
+                }
+
             }
     
             .add-checklist-btn {

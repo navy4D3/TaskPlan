@@ -99,6 +99,28 @@ final class TaskController extends AbstractController
         ]);
     }
 
+    #[Route('/task/{taskId}/update-description', name: 'update_task_description')]
+    public function updateDescription(int $taskId, EntityManagerInterface $em, Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $newDescription = $data['description'] ?? [];
+
+        $task = $em->getRepository(Task::class)->find($taskId);
+
+        if (!$task) {
+            return new JsonResponse(['error' => 'Tâche introuvable'], 404);
+        }
+
+        $task->setDescription($newDescription);
+
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Description mise à jour',
+        ]);
+    }
+
     #[Route('/reorder-tasks', name: 'task_reorder', methods: ['POST'])]
     public function reorderTasks(Request $request, EntityManagerInterface $em): JsonResponse
     {
@@ -147,13 +169,9 @@ final class TaskController extends AbstractController
             $checklist->setTaskId($taskId);
         }
 
-        $item = $checklist->getItem($text);
-
-        if (!$item) {
-            $checklist->addItem($text);
-            $dm->persist($checklist);
-            $dm->flush();
-        }
+        $checklist->addItem($text);
+        $dm->persist($checklist);
+        $dm->flush();
         
         
 
@@ -168,6 +186,81 @@ final class TaskController extends AbstractController
             'items' => $checklist->getItems()
         ]);
     }
+
+    #[Route('/task/{taskId}/checklist/reorder', name: 'checklist_reorder')]
+    public function reorderChecklist(string $taskId, Request $request, EntityManagerInterface $em, DocumentManager $dm): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $order = $data['order'] ?? [];
+
+        if (empty($order)) {
+            return new JsonResponse(['error' => 'Aucun ordre fourni'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+    
+        // On récupère le document Checklist associé à la tâche
+        $checklist = $dm->getRepository(Checklist::class)->findOneBy(['taskId' => $taskId]);
+    
+        if (!$checklist) {
+            return new JsonResponse(['error' => 'Checklist introuvable'], JsonResponse::HTTP_NOT_FOUND);
+        }
+    
+        // Réordonner les items avec la méthode du Document
+        $checklist->reorderItems($order);
+    
+        $dm->flush();
+        return new JsonResponse(['success' => true]);
+    }
+
+    #[Route('/task/{taskId}/checklist/update-item', name: 'checklist_update_item')]
+    public function updateChecklistItem(string $taskId, Request $request, DocumentManager $dm): JsonResponse|Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $checklistPosition = intval($data['checklistPosition']) ?? null;
+        $newContent = $data['content'] ?? null;
+        // return new Response($newContent);
+        // if (!$checklistPosition || !$newContent) {
+        //     return new JsonResponse(['error' => 'Paramètres manquants'], 400);
+        // }
+
+
+        $checklist = $dm->getRepository(Checklist::class)->findOneBy(['taskId' => $taskId]);
+
+        if (!$checklist || $checklist->getTaskId() !== $taskId) {
+            return new JsonResponse(['error' => 'Checklist introuvable'], 404);
+        }
+
+        $checklist->setItem($checklistPosition, $newContent, $checklist->getItem($checklistPosition)['isDone']);
+        $dm->flush();
+
+        return new JsonResponse(['success' => true, 'content' => $newContent]);
+    }
+
+    #[Route('/task/{taskId}/checklist/remove-item', name: 'checklist_remove_item')]
+    public function removeChecklistItem(string $taskId, Request $request, EntityManagerInterface $em, DocumentManager $dm): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $itemPosition = $data['itemPosition'] ?? null;
+
+        if ($itemPosition === null) {
+            return new JsonResponse(['success' => false, 'error' => 'Position manquante'], 400);
+        }
+
+        $task = $em->getRepository(Task::class)->find($taskId);
+
+        if (!$task) {
+            return new JsonResponse(['success' => false, 'error' => 'Tâche introuvable'], 404);
+        }
+
+        $checklist = $dm->getRepository(Checklist::class)->findOneBy(['taskId' => $taskId]);
+
+        $checklist->removeItem($itemPosition);
+
+        $dm->flush();
+
+        return new JsonResponse(['success' => true, 'message' => 'Item supprimé']);
+    }
+
+
 
     #[Route('/task/move', name: 'task_move', methods: ['POST'])]
     public function moveTask(Request $request, EntityManagerInterface $em): JsonResponse
