@@ -94,14 +94,15 @@ class Checklist
         return $this;
     }
 
-    public function setItemStatus(string $content, bool $isDone): self
+    public function setItemStatus(string $position, bool $isDone): self
     {
-        foreach ($this->items as &$item) {
-            if ($item['content'] === $content) {
-                $item['isDone'] = $isDone;
-                break;
-            }
-        }
+        $this->items[$position]['isDone'] = $isDone;
+        // foreach ($this->items as &$item) {
+        //     if ($item['position'] === $position) {
+        //         $item['isDone'] = $isDone;
+        //         break;
+        //     }
+        // }
 
         return $this;
     }

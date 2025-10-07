@@ -278,34 +278,43 @@ function initTaskDataAndShowPopup(taskId) {
         descriptionInput.value = data.description;
         taskPopup.dataset.taskId = data.id;
 
+
         const previousChecks = taskPopup.querySelectorAll('.checklist');
 
         previousChecks.forEach(check => check.remove());
 
         if (data.checklist.items !== undefined) {
             data.checklist.items.forEach(check => {
-                addChecklistOnFront(check.content, check.position);
+                addChecklistOnFront(check.content, check.position, check.isDone);
                 
             })
         }
         initChecklistEvents();
 
-        descriptionInput.addEventListener('blur', function() {
+        if (descriptionInput.dataset.initialized !== "true") {
+
+            descriptionInput.addEventListener('blur', function() {
             
-            fetch(`/task/${taskId}/update-description`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
-                },
-                body: JSON.stringify({ description: descriptionInput.value })
+                fetch(`/task/${taskId}/update-description`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
+                    },
+                    body: JSON.stringify({ description: descriptionInput.value })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data.message)
+
+                })
+                .catch(error => console.error("Erreur fetch:", error));
             })
-            .then(response => response.json())
-            .then(data => {
-                // console.log(data.message)
-            })
-            .catch(error => console.error("Erreur fetch:", error));
-        })
+
+            descriptionInput.dataset.initialized = "true";
+
+        }
+        
 
         
         showPopup(taskPopup, 'flex');
@@ -315,6 +324,7 @@ function initTaskDataAndShowPopup(taskId) {
 }
 
 function initTaskEvent(taskNode) {
+
     taskNode.addEventListener('click', () => initTaskDataAndShowPopup(taskNode.dataset.taskId));
     
     const sectionHeaders = sectionsList.querySelectorAll('.header');
@@ -446,19 +456,49 @@ function initChecklistEvents() {
 
     initRadioBtnsEvent();
 
-    checklistList.querySelectorAll('.radio-icon').forEach(radio => {
-        radio.addEventListener('click', function() {
-            if (radio.querySelector('.selected').style.display !== "none") {
-                radio.nextElementSibling.style.textDecoration = 'line-through';
+    // checklistList.querySelectorAll('.radio-icon').forEach(radio => {
+        
+    // })
 
-                // fetch update statut check
-            } else {
-                radio.nextElementSibling.style.textDecoration = 'unset';
-            }
+    // checklistList.querySelectorAll('span').forEach(span => {
+        
+    // })
+
+    checklistList.querySelectorAll('.checklist').forEach(check => {
+
+        if (check.dataset.initialized == 'true') {
+            return;
+        }
+
+        check.addEventListener('mouseover', function() {
+            check.querySelector('.delete-check-btn').style.display = "block";
         })
-    })
 
-    checklistList.querySelectorAll('span').forEach(span => {
+        check.addEventListener('mouseout', function() {
+            check.querySelector('.delete-check-btn').style.display = "none";
+        })
+
+        check.querySelector('.delete-check-btn').addEventListener('click', function() {
+            const item = btn.closest('.checklist');
+            const itemPosition = item.dataset.checklistPosition;
+
+            fetch(`/task/${taskId}/checklist/remove-item`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ itemPosition })
+            }).then(res => res.json())
+            .then(data => {
+                item.remove();
+            })
+            .catch(err => console.error('Erreur suppression checklist:', err));
+        })
+
+        const span = check.querySelector('span');
+        const radio = check.querySelector('.radio-icon');
+
         span.addEventListener('click',function(e) {
             e.preventDefault();
 
@@ -517,53 +557,63 @@ function initChecklistEvents() {
             });
 
         });
-    })
 
-    
+        radio.addEventListener('click', function() {
+            let isItemDone = false;
+            const currentItemPosition = radio.closest('.checklist').dataset.checklistPosition;
 
-    checklistList.querySelectorAll('.checklist').forEach(check => {
-        check.addEventListener('mouseover', function() {
-            check.querySelector('.delete-check-btn').style.display = "block";
-        })
+            if (radio.querySelector('.selected').style.display !== "none") {
+                radio.nextElementSibling.style.textDecoration = 'line-through';
 
-        check.addEventListener('mouseout', function() {
-            check.querySelector('.delete-check-btn').style.display = "none";
-        })
+                // fetch update statut check
+                isItemDone = true;
+            } else {
+                radio.nextElementSibling.style.textDecoration = 'unset';
+            }
 
-
-    })
-
-    checklistList.querySelectorAll('.delete-check-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const item = btn.closest('.checklist');
-            const itemPosition = item.dataset.checklistPosition;
-
-            fetch(`/task/${taskId}/checklist/remove-item`, {
+            fetch(`/task/${taskId}/checklist/update-status`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify({ itemPosition })
-            }).then(res => res.json())
-            .then(data => {
-                item.remove();
+                body: JSON.stringify({
+                    itemPosition : currentItemPosition,
+                    isDone : isItemDone
+                })
             })
-            .catch(err => console.error('Erreur suppression checklist:', err));
+            .then(res => res.json())
+            .then(data => {
+                // console.log(data.item);
+            })
+            .catch(err => console.error('Erreur mise à jour statut checklist:', err));
         })
 
+        check.dataset.initialized == 'true'
+
+
+
     })
+
+    
  
 }
 
-function addChecklistOnFront(text, position) {
+function addChecklistOnFront(text, position, isDone) {
+    let spanDecoration = '';
+    let innerRadioStyle = "none";
+
+    if (isDone) {
+        spanDecoration = `text-decoration: line-through;"`;
+        innerRadioStyle = 'block';
+    }
     const checklistHTML = `
         <div class="checklist" data-checklist-position=${position}>
             <div class="left">
                 <div class="radio-icon">
-                    <div class="selected" style="display:none"></div>
+                    <div class="selected" style="display:${innerRadioStyle}"></div>
                 </div>
-                <span>${text}</span>
+                <span style="${spanDecoration}" >${text}</span>
             </div>
             <svg class="delete-check-btn" style="display:none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16m-10 4v6m4-6v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
 
@@ -599,7 +649,28 @@ function deleteTask(taskId) {
 
         hidePopup(taskPopup);
 
-        document.querySelector(`[data-task-id="${taskPopup.dataset.taskId}"]`).remove();
+        const currentTaskNode = document.querySelector(`[data-task-id="${taskPopup.dataset.taskId}"]`);
+
+        const currentTaskList = currentTaskNode.closest('.tasks-list');
+
+        if (currentTaskList.children.length == 1 ) {
+            const emptyListMessage = document.createElement('span');
+            emptyListMessage.classList.add(
+                'empty-tasks-message',
+                'text-center',
+                'opacity-50',
+                'w-100');
+            emptyListMessage.dataset.taskId = "0";
+
+            emptyListMessage.innerText = "Aucune tâche pour cette section";
+
+            currentTaskList.appendChild(emptyListMessage);
+
+        }
+
+        currentTaskNode.remove();
+
+        
 
     })
     .catch(error => {
