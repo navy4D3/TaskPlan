@@ -1,14 +1,17 @@
-const { showPopup, hidePopup, sanitizeInput, treatFormAlert, showSuccessAlert, initRadioBtnsEvent } = require("../app");
+const { showPopup, hidePopup, sanitizeInput, treatFormAlert, showSuccessAlert, initRadioBtnsEvent } = require("../app");;
 
-const sectionsContainer = document.getElementById('sections-list');
 
-if (sectionsContainer) {
-    new Sortable(sectionsContainer, {
+const sectionsList = document.getElementById('sections');
+const projectId = sectionsList.dataset.projectId;
+
+if (sectionsList) {
+    new Sortable(sectionsList, {
         animation: 150,
         handle: '.header', // <-- le drag se fait uniquement via .header
         onEnd: function (evt) {
-            const order = Array.from(sectionsContainer.children)
+            const order = Array.from(sectionsList.children)
                 .map(el => el.dataset.sectionId);
+            order.pop();
 
             // Envoi AJAX vers Symfony pour sauvegarder l'ordre
             fetch('/sections/reorder', {
@@ -24,12 +27,128 @@ if (sectionsContainer) {
     });
 }
 
+if (window.innerWidth < 512) {
+    const sectionHeaders = sectionsList.querySelectorAll('.header');
+    let isLongPress = false;
+    let longPressTimer = null;
 
-const profilShowAddTaskPopupBtns = document.querySelectorAll(".show-add-task-popup-btn");
+    // Durée pour considérer un "appui long" (en ms)
+    const LONG_PRESS_DURATION = 400;
+
+    sectionHeaders.forEach(header => {
+        header.addEventListener('touchstart', (e) => {
+            longPressTimer = setTimeout(() => {
+                isLongPress = true;
+                // document.body.classList.add('reorder-mode');
+                // désactive le scroll carrousel pendant le mode réorder
+                sectionsList.style.scrollSnapType = 'none';
+                sectionsList.style.gap = "0px";
+
+                // effet visuel sur les sections
+                sectionsList.querySelectorAll('.section').forEach(section => {
+                    section.classList.add('zoom-out');
+                    // section.style.scale= 0.5;
+                    // section.style.marginRight= '-40%';
+                    
+                });
+            }, LONG_PRESS_DURATION);
+        });
+
+        header.addEventListener('touchend', () => {
+            clearTimeout(longPressTimer);
+            if (isLongPress) {
+                isLongPress = false;
+                // quand l’utilisateur relâche : on désactive le mode reorder
+                // document.body.classList.remove('reorder-mode');
+                sectionsList.style.scrollSnapType = 'x mandatory';
+                sectionsList.style.gap = "10px";
+                sectionsList.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('zoom-out');
+                    section.style.scale = "unset";
+                    // section.style.marginRight= '0px';
+                    // section.style.minWidth= '100%';
+                });
+            }
+        });
+
+        header.addEventListener('touchmove', (e) => {
+            // Si l'utilisateur commence à glisser avant la fin de l'appui long, on annule
+            clearTimeout(longPressTimer);
+        });
+    });
+
+}
+
+const deleteSectionPopup = document.querySelector('#delete-section-popup');
+const deleteSectionBtn = deleteSectionPopup.querySelector('.delete-section-btn');
+const hideDeleteSectionPopup = deleteSectionPopup.querySelector('.hide-popup-btn');
+
+hideDeleteSectionPopup.addEventListener('click', () => hidePopup(deleteSectionPopup));
+
+deleteSectionBtn.addEventListener('click', function() {
+    const currentSectionId = deleteSectionPopup.dataset.sectionId;
+
+    fetch('/delete-section/' + currentSectionId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        hidePopup(deleteSectionPopup);
+
+        document.querySelector(`[data-section-id="${currentSectionId}"]`).remove();
+    })
+    .catch(error => console.error("Erreur fetch:", error));
+})
+
+
+initSectionEvents();
+
+function initSectionEvents() {
+    const sections = document.querySelectorAll('.section');
+
+    sections.forEach(section => {
+        if (section.classList.contains('add-section')) {
+            return;
+        }
+        const header = section.querySelector('.header');
+        const showDeleteSectionPopupBtn = header.querySelector('.show-delete-section-popup-btn');
+        
+        if (section.dataset.initialized === "true") return;
+
+        header.addEventListener('mouseover', function(e) {
+            e.preventDefault();
+            showDeleteSectionPopupBtn.style.display = "block";
+
+            deleteSectionPopup.dataset.sectionId = section.dataset.sectionId;
+
+        })
+
+        header.addEventListener('mouseout', function() {
+            showDeleteSectionPopupBtn.style.display = "none";
+        })
+
+        
+        showDeleteSectionPopupBtn.addEventListener('click', function()  {
+            showPopup(deleteSectionPopup, 'flex');
+            deleteSectionPopup.dataset.sectionId = section.dataset.sectionId;
+        })
+
+        section.dataset.initialized = "true";
+    })
+}
+
+
+
+
+
 const addTaskPopup = document.getElementById('add-task-popup');
 const addTaskBtn = addTaskPopup.querySelector('.add-task-btn');
 const addTaskInput = addTaskPopup.querySelector('input');
-const hideAddTaskPopupBtn = addTaskPopup.querySelector('.hide-popup-btn');
+const hideAddTaskPopupBtn = addTaskPopup.querySelector('.close-popup-btn');
 
 
 // const tasksList = myTasksSection.querySelector(".tasks");
@@ -37,15 +156,28 @@ const hideAddTaskPopupBtn = addTaskPopup.querySelector('.hide-popup-btn');
 const currentProjectId = document.querySelector('.sections').dataset.projectId;
 let currentSectionId;
 
-profilShowAddTaskPopupBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-        showPopup(addTaskPopup, 'flex');
+initShowAddTaskPopupBtns();
+function initShowAddTaskPopupBtns() {
+    const profilShowAddTaskPopupBtns = document.querySelectorAll(".show-add-task-popup-btn");
 
-        currentSectionId =  btn.dataset.sectionId;
 
-        addTaskBtn.classList.add('inactive');
+    profilShowAddTaskPopupBtns.forEach(btn => {
+        if (btn.dataset.initialized === "true") return;
+
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            
+            showPopup(addTaskPopup, 'flex');
+    
+            currentSectionId =  btn.dataset.sectionId;
+    
+            addTaskBtn.classList.add('inactive');
+        })
+
+        btn.dataset.initialized = "true";
     })
-})
+}
 
 hideAddTaskPopupBtn.addEventListener('click', () => {
     hidePopup(addTaskPopup);
@@ -185,6 +317,52 @@ function initTaskDataAndShowPopup(taskId) {
 function initTaskEvent(taskNode) {
     taskNode.addEventListener('click', () => initTaskDataAndShowPopup(taskNode.dataset.taskId));
     
+    const sectionHeaders = sectionsList.querySelectorAll('.header');
+    let isLongPress = false;
+    let longPressTimer = null;
+
+    // Durée pour considérer un "appui long" (en ms)
+    const LONG_PRESS_DURATION = 400;
+    taskNode.addEventListener('touchstart', (e) => {
+        longPressTimer = setTimeout(() => {
+
+            isLongPress = true;
+            // document.body.classList.add('reorder-mode');
+            // désactive le scroll carrousel pendant le mode réorder
+            sectionsList.style.scrollSnapType = 'none';
+            sectionsList.style.gap = "0px";
+
+            // effet visuel sur les sections
+            sectionsList.querySelectorAll('.section').forEach(section => {
+                section.classList.add('zoom-out');
+                // section.style.scale= 0.5;
+                // section.style.marginRight= '-40%';
+                
+            });
+        }, LONG_PRESS_DURATION);
+    });
+
+    taskNode.addEventListener('touchend', () => {
+        clearTimeout(longPressTimer);
+        if (isLongPress) {
+            isLongPress = false;
+            // quand l’utilisateur relâche : on désactive le mode reorder
+            // document.body.classList.remove('reorder-mode');
+            sectionsList.style.scrollSnapType = 'x mandatory';
+            sectionsList.style.gap = "10px";
+            sectionsList.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('zoom-out');
+                section.style.scale = "unset";
+                // section.style.marginRight= '0px';
+                // section.style.minWidth= '100%';
+            });
+        }
+    });
+
+    taskNode.addEventListener('touchmove', (e) => {
+        // Si l'utilisateur commence à glisser avant la fin de l'appui long, on annule
+        clearTimeout(longPressTimer);
+    });
 }
 
 
@@ -268,6 +446,18 @@ function initChecklistEvents() {
 
     initRadioBtnsEvent();
 
+    checklistList.querySelectorAll('.radio-icon').forEach(radio => {
+        radio.addEventListener('click', function() {
+            if (radio.querySelector('.selected').style.display !== "none") {
+                radio.nextElementSibling.style.textDecoration = 'line-through';
+
+                // fetch update statut check
+            } else {
+                radio.nextElementSibling.style.textDecoration = 'unset';
+            }
+        })
+    })
+
     checklistList.querySelectorAll('span').forEach(span => {
         span.addEventListener('click',function(e) {
             e.preventDefault();
@@ -329,6 +519,8 @@ function initChecklistEvents() {
         });
     })
 
+    
+
     checklistList.querySelectorAll('.checklist').forEach(check => {
         check.addEventListener('mouseover', function() {
             check.querySelector('.delete-check-btn').style.display = "block";
@@ -337,6 +529,7 @@ function initChecklistEvents() {
         check.addEventListener('mouseout', function() {
             check.querySelector('.delete-check-btn').style.display = "none";
         })
+
 
     })
 
@@ -460,5 +653,147 @@ document.querySelectorAll('.tasks-list').forEach(list => {
 
         }
     });
+})
+
+const showAddSectionPopupBtn = document.getElementById("show-add-section-popup-btn");
+const addSectionPopup = document.getElementById("add-section-popup");
+const addSectionIconsBtns = addSectionPopup.querySelectorAll('.icon');
+const addSectionColorsBtns = addSectionPopup.querySelectorAll('.color');
+const addSectionInputs = addSectionPopup.querySelectorAll('input');
+const addSectionBtn = addSectionPopup.querySelector('.add-section-btn');
+const hideAddSectionPopupBtn = addSectionPopup.querySelector('.close-popup-btn');
+
+showAddSectionPopupBtn.addEventListener('click', () => showPopup(addSectionPopup, 'flex'));
+
+hideAddSectionPopupBtn.addEventListener('click', ()=> hidePopup(addSectionPopup));
+
+addSectionIconsBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        addSectionIconsBtns.forEach(btn => btn.classList.remove('selected'));
+        btn.classList.toggle('selected');
+
+        const hiddenInput = addSectionPopup.querySelector('input[name="icon"');
+
+        if (hiddenInput) {
+            hiddenInput.value = btn.id;
+            hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    })
+})
+
+addSectionColorsBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        addSectionColorsBtns.forEach(btn => btn.classList.remove('selected'));
+        btn.classList.toggle('selected');
+
+        const hiddenInput = addSectionPopup.querySelector('input[name="color"');
+
+        if (hiddenInput) {
+            hiddenInput.value = btn.id;
+            hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    })
+})
+
+addSectionInputs.forEach(input => {
+    input.addEventListener('input', function() {
+        let allFilled = true;
+
+        addSectionInputs.forEach(input => {
+            if (input.value == "") {
+                allFilled = false;
+            }
+        })
+
+        if (allFilled) {
+            addSectionBtn.classList.remove('inactive');
+        }
+
+    })
+})
+
+addSectionBtn.addEventListener('click', function() {
+    const title = addSectionPopup.querySelector('input[name="title"]').value.trim();
+    const icon = addSectionPopup.querySelector('input[name="icon"]').value.trim();
+    const color = addSectionPopup.querySelector('input[name="color"]').value.trim();
+
+    if (!title || !icon || !color) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+    }
+
+    fetch(`/project/${projectId}/add-section`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+        },
+        body: JSON.stringify({
+            title: title,
+            icon: icon,
+            color: color,
+            projectId: projectId
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+            console.log("Nouvelle section créée :", data.section);
+
+            
+            const newSectionIconSvg = data.section.icon.svg;
+            const newSectionIcon = document.createRange().createContextualFragment(newSectionIconSvg).firstChild;
+            newSectionIcon.classList.add('icon');
+            newSectionIcon.style.color = data.section.color.textColor;
+
+            const trashIconSvg = data.section.trashIcon.svg;
+            const trashIcon = document.createRange().createContextualFragment(trashIconSvg).firstChild;
+            trashIcon.classList.add('show-delete-section-popup-btn');
+            trashIcon.classList.add('trash-icon');
+            trashIcon.style.display = "none";
+            
+
+            const sectionHtml = `
+                <div data-section-id="${data.section.id}" class="section">
+                    <div class="header" style="background-color: ${data.section.color.hex}">
+                        <div class="left">
+                            ${newSectionIcon.outerHTML}
+                            <h2 style="color: ${data.section.color.textColor}">${data.section.title}</h2>
+                        </div>
+                        ${trashIcon.outerHTML}
+                    </div>
+
+                    <div class="tasks">
+                        <div class="tasks-list">    
+                            <span class="empty-tasks-message text-center opacity-50 w-100" data-task-id="0">
+                                Aucune tâche pour cette section
+                            </span>
+                        </div>
+                        
+                        <button class="tasks-btn show-add-task-popup-btn btn outline-dotted" data-section-id="${data.section.id}">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/></svg>
+                            Ajouter
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            
+
+            
+            // sectionsList.insertAdjacentHTML('beforeend', sectionHtml);
+            const lastDiv = sectionsList.querySelector(".add-section");
+            lastDiv.insertAdjacentHTML("beforebegin", sectionHtml);
+
+            addSectionInputs.forEach(input => input.value = "");
+
+            initShowAddTaskPopupBtns();
+            initSectionEvents();
+            hidePopup(addSectionPopup);
+            
+            // 👉 Tu pourrais ici injecter directement la section dans ton DOM
+            // par exemple, rajouter un <div class="section">... </div>
+            // scroller  vers la nouvelle section ajouté
+    })
+    .catch(error => console.error("Erreur fetch:", error));
 })
 

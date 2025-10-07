@@ -45,6 +45,8 @@ final class ProjectController extends AbstractController
             'project' => $project,
             'sections' => $sections,
             'tasksBySection' => $tasksBySection,
+            'colors' => SectionColor::cases(),
+            'icons' => SectionIcon::cases(),
         ]);
     }
 
@@ -98,7 +100,7 @@ final class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/sections/reorder', name: 'sections_reorder', methods: ['POST'])]
+    #[Route('/sections/reorder', name: 'sections_reorder')]
     public function reorderSections(Request $request, EntityManagerInterface $em): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -115,4 +117,90 @@ final class ProjectController extends AbstractController
 
         return new JsonResponse(['success' => true]);
     }
+
+    #[Route('/project/{id}/add-section', name: 'project_add_section')]
+    public function addSection(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $title = $data['title'] ?? null;
+        $icon = $data['icon'] ?? null;
+        $color = $data['color'] ?? null;
+
+        if (!$title || !$icon || !$color || !$id) {
+            return new JsonResponse(['error' => 'Paramètres manquants'], 400);
+        }
+
+        $project = $em->getRepository(Project::class)->find($id);
+        if (!$project) {
+            return new JsonResponse(['error' => 'Projet introuvable'], 404);
+        }
+
+        // Conversion en Enum
+        try {
+            $iconEnum = SectionIcon::from($icon);
+            $colorEnum = SectionColor::from($color);
+        } catch (\ValueError $e) {
+            return new JsonResponse(['error' => 'Invalid enum value'], 400);
+        }
+
+        $section = new Section();
+        $section->setTitle($title);
+        $section->setIcon($iconEnum);
+        $section->setColor($colorEnum);
+        $section->setProject($project);
+
+        $trashIcon = SectionIcon::from('trash');
+
+        // position par défaut = fin
+
+        $section->setPosition(count($project->getSections())+1);
+
+        $em->persist($section);
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'section' => [
+                'id' => $section->getId(),
+                'title' => $section->getTitle(),
+                'icon' => [
+                    'icon' => $section->getIcon()->icon(),
+                    'svg' => $section->getIcon()->getSvg(),
+                ],
+                'color' => [
+                    'hex' => $section->getColor()->hex(),
+                    'textColor' => $section->getColor()->textColor(),
+                ],
+                'position' => $section->getPosition(),
+                'trashIcon' => [
+                    'svg' => $trashIcon->getSvg()
+                ]
+            ]
+        ]);
+    }
+
+    #[Route('/delete-section/{id}', name: 'app_section_delete')]
+    public function delete($id, EntityManagerInterface $em): JsonResponse
+    {
+        $section = $em->getRepository(Section::class)->find($id);
+
+        if (!$section) {
+            return new JsonResponse(['success' => false, 'message' => 'Section introuvable'], 404);
+        }
+
+        // Supprimer toutes les tâches liées
+        foreach ($section->getTasks() as $task) {
+            $em->remove($task);
+        }
+
+        // Supprimer la section
+        $em->remove($section);
+        $em->flush();
+
+        return new JsonResponse(['success' => true, 'message' => 'Section supprimée avec ses tâches']);
+    }
+
+
+
 }

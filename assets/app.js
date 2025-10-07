@@ -114,16 +114,24 @@ export function initRadioBtnsEvent() {
 
     if (radioIcons.length > 0) {
         radioIcons.forEach(radio => {
-            radio.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const innerRadio = radio.querySelector('.selected');
+            if (radio.dataset.initialized !== 'true') {
 
-                if (innerRadio.style.display == "none") {
-                    innerRadio.style.display = "block";
-                } else {
-                    innerRadio.style.display = "none";
-                }
-            })
+                radio.addEventListener('click', function(e) {
+
+                    const innerRadio = radio.querySelector('.selected');
+    
+                    const isHidden = getComputedStyle(innerRadio).display === "none";
+
+                    if (isHidden) {
+                        innerRadio.style.display = "flex"; // ou block selon ton besoin
+                    } else {
+                        innerRadio.style.display = "none";
+                    }
+                })
+
+                radio.dataset.initialized = 'true';
+            }
+            
         })
     }
 }

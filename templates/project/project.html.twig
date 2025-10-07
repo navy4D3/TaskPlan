@@ -17,13 +17,18 @@
 {% endblock %}
 
 {% block body %}
-    <div  class="sections" data-project-id={{ project.id}}>
-        <div id="sections-list">
+    <div  id="sections"class="sections" data-project-id={{ project.id}}>
+        {# <div id="sections-list"> #}
             {% for section in sections %}
                 <div data-section-id="{{section.id}}" class="section">
                     <div class="header" style="background-color: {{ section.color.hex}}">
-                        <twig:ux:icon name="{{ section.icon.icon }}"  style="color: {{ section.color.textColor}}"/>
-                        <h2 style="color: {{ section.color.textColor}}">{{ section.title}}</h2>
+                        <div class="left">
+                            <twig:ux:icon name="{{ section.icon.icon }}"  style="color: {{ section.color.textColor}}"/>
+                            <h2 style="color: {{ section.color.textColor}}">{{ section.title}}</h2>
+                        </div>
+                        
+                        <twig:ux:icon class="show-delete-section-popup-btn trash-icon" name="tabler:trash" style="display:none"/>
+
                     </div>
 
                     <div class="tasks">
@@ -46,20 +51,20 @@
                     </div>
                 </div>
             {% endfor %}
-        </div>
 
-        <div class="section add-section">
-            <div class="">
+            <div id="show-add-section-popup-btn" class="section add-section">
                 <twig:ux:icon name="bi:plus-lg" />
-                <h2>Ajouter une section</h2>
+                <h2>Ajouter une<br>section</h2>
             </div>
-        </div>
+        {# </div> #}
+
+        
     </div>
 
     <div id="add-task-popup" class="add-task-popup popup center" style="display:none">
         <div class="label-quit">
             <span>Ajouter une tâche</span>
-            <twig:ux:icon class="hide-popup-btn"name="bi:x" />
+            <twig:ux:icon class="close-popup-btn"name="bi:x" />
         </div>
 
         <input type="text" placeholder="Nom de la tâche">
@@ -126,6 +131,47 @@
         </div>
 
         
+    </div>
+
+    <div id="add-section-popup" class="add-section-popup popup center" style="display:none">
+        <div class="header">
+            <span>Ajouter une section</span>
+            <twig:ux:icon class="close-popup-btn"name="bi:x-lg" />
+        </div>
+
+        <input name="title" type="text" placeholder="Titre de la section (15 caractères max)" maxlength="15">
+
+        <div class="icon-section">
+            <label for="icon">Choisissez une icône</label>
+            <div class="icons">
+                    {% for icon in icons %}
+                        <twig:ux:icon id="{{ icon.label }}" class="icon" name="{{icon.icon}}" />
+                    {% endfor %}
+            </div>
+            <input name="icon" type="hidden">
+        </div>
+
+        <div class="color-section">
+            <label for="color">Choisissez une couleur</label>
+            <div class="colors">
+                {% for color in colors %}
+                    <div class="color" id="{{ color.label }}" style="background-color: {{color.hex}}"></div>
+                {% endfor %}  
+            </div>
+            <input name="color" type="hidden">
+        </div>
+        <button class="add-section-btn mallow-medium btn inactive">Ajouter</button>
+    </div>
+
+    <div id="delete-section-popup" class="delete-section-popup popup center" style="display:none">
+
+        <h4>Souhaitez-vous réellement supprimer la section ?</h4>
+        <p>La section et toute les taches qui y sont rattachés seront supprimés.</p>
+
+        <div class="btns">
+            <button class="btn mallow-medium delete-section-btn">Confirmer</button>
+            <button class="btn underline hide-popup-btn">Annuler</button>
+        </div>
     </div>
 
     <div class="blur-effect"></div>
