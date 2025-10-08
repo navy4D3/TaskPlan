@@ -37,7 +37,7 @@
                             {% set sectionTasks = tasksBySection[section.id] %}
                             {% if sectionTasks|length > 0 %}
                                 {% for task in sectionTasks %}
-                                    <span class="task" data-task-id="{{task.id}}">{{ task.title }}</span>
+                                    <span class="task {% if task.isDone %}done{% endif %}" data-task-id="{{task.id}}">{{ task.title }}</span>
                                 {% endfor %}
                             {% else %}
                                 <span class="empty-tasks-message text-center opacity-50 w-100" data-task-id="0">Aucune tâche pour cette section</span>
@@ -73,9 +73,9 @@
 
     <div class="task-popup popup center" style="display:none">
         <div class="header">
-            <button class="end-task-btn btn mallow-medium">
+            <button id="toggle-task-status-btn" class="toggle-task-status-btn btn mallow-medium">
                 <twig:ux:icon name="bi:check-lg" />
-                Terminer la tâche
+                <span class="">Terminer la tâche</span>
             </button>
 
             <div class="close-delete-btns">

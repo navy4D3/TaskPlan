@@ -103,7 +103,7 @@ body {
     
     .section-details {
         width: 100%;
-        max-width: 500px;
+        // max-width: 500px;
 
         .section {
             display: flex;
@@ -160,16 +160,32 @@ body {
                 gap: 10px;
 
                 .project {
-                    padding: 10px;
-                    text-decoration: none;
-                    border-radius: 10px;
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: nowrap;
+                    align-items: center;
+                    gap: 10px;
 
-                    font-family: $inter-body;
-                    color: $mallow-black;
-                    background-color: $mallow-medium-25;
-                    // font-weight: bold;
+                    a {
+                        padding: 10px;
+                        text-decoration: none;
+                        border-radius: 10px;
 
-                    cursor: pointer;
+                        font-family: $inter-body;
+                        color: $mallow-black;
+                        background-color: $mallow-medium-25;
+                        // font-weight: bold;
+
+                        cursor: pointer;
+                    }
+
+                    svg {
+                        height: 25px;
+                        width: 25px;
+                        color: $red-soft-50;
+                        cursor: pointer;
+                    }
+                    
                 }
 
                 a::first-letter {
@@ -181,6 +197,7 @@ body {
         }
     
         .my-data-section {
+            max-width: 500px;
             .label-btn {
                 h2 {
                     margin: 5px 0px;
@@ -198,8 +215,12 @@ body {
 
         }
 
+        .parameters-section {
+            max-width: 500px;
+        }
         .my-data-form, .edit-mail-form, .edit-password-form {
-    
+            max-width: 500px;
+
             > div {
                 flex-direction: row;
                 align-items: center;
@@ -300,6 +321,31 @@ body {
 
 }
 
+.delete-project-popup {
+    flex-direction: column;
+    gap: 10px;
+    width: 80%;
+
+    * {
+        text-align: center;
+    }
+
+    h4 {
+        color: $mallow-medium;
+    }
+
+    .btns {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 30px;
+
+        * {
+            width: fit-content;
+        }
+    }
+}
+
 @media (max-width : 768px) {
     
     nav {
@@ -356,6 +402,58 @@ body {
 
                 h3 {
                     text-align: center;
+                }
+            }
+
+            .my-projects-section {
+                .projects {
+                    .swipe-item {
+                        position: relative;
+                        background: white;
+                        transition: transform 0.3s ease, margin-left 0.3s ease;
+                        will-change: transform;
+                    }
+                    
+                    .swipe-item.swiped-left {
+                        transform: translateX(-50px); /* Décalage à gauche */
+                    }
+                    
+                    // .hidden-action {
+                    //     position: absolute;
+                    //     right: 10px;
+                    //     top: 50%;
+                    //     transform: translateY(-50%);
+                    //     opacity: 0;
+                    //      /* évite les clics tant qu’elle est cachée */
+                    // }
+                    
+                    
+                    
+                    .project {
+                        position: relative;
+                        a {
+                            width: 100%;
+                        }
+                        
+
+                        svg {
+                            opacity: 0%;
+                            position: absolute;
+                            right: 10px;
+                            top: 50%;
+                            transform: translate(0%, -50%);
+                            z-index: 0;
+                            opacity: 0;
+                            transition: opacity 0.3s ease;
+                            pointer-events: none;
+                        }
+
+                        svg.visible {
+                            opacity: 1;
+                            pointer-events: auto;
+                        }
+                    }
+
                 }
             }
 

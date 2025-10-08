@@ -48,9 +48,10 @@
                         <p style="opacity:75%" class="empty-projects-message">Aucun projet en cours</p>
                     {% else %}
                         {% for project in app.user.projects %}
-                            <a href="project/{{ project.id }}" class="project">
-                                {{ project.title }}
-                            </a>
+                            <div class="project " data-project-id={{ project.id }}>
+                                <a class="swipe-item"href="project/{{ project.id }}" >{{ project.title }}</a>
+                                <twig:ux:icon class="show-delete-project-popup-btn trash-icon hidden-action" name="tabler:trash" style="opacity:0%"/> 
+                            </div>
                         {% endfor %}
                     {% endif %}
                 </div>
@@ -132,6 +133,16 @@
                 <button class="hide-popup-btn btn underline">Annuler</button>
             </div>
             
+        </div>
+
+        <div id="delete-project-popup" class="delete-project-popup popup center" style="display:none">
+
+            <h4>Souhaitez-vous réellement supprimer ce projet ?</h4>
+
+            <div class="btns">
+                <button class="btn mallow-medium delete-project-btn">Confirmer</button>
+                <button class="btn underline hide-popup-btn">Annuler</button>
+            </div>
         </div>
 
         <div class="blur-effect"></div>

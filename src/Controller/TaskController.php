@@ -40,7 +40,8 @@ final class TaskController extends AbstractController
             'id' => $task->getId(),
             'title' => $task->getTitle(),
             'description' => $task->getDescription(),
-            'checklist' => $checklistArray
+            'checklist' => $checklistArray,
+            'isDone' => $task->isDone()
         ]);
     }
 
@@ -146,6 +147,30 @@ final class TaskController extends AbstractController
     }
 
 
+    #[Route('/task/{taskId}/update-status', name: 'update_task_status')]
+    public function updateTaskStatus(Request $request, string $taskId, DocumentManager $dm, EntityManagerInterface $em): JsonResponse
+    {
+        
+        $data = json_decode($request->getContent(), true);
+        $isDone = $data['isDone'] ?? false;
+
+        $task = $em->getRepository(Task::class)->find($taskId);
+
+        $task->setIsDone($isDone);
+
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'task' => [
+                'id' => $task->getId(),
+                'title' => $task->getTitle(),
+                'isDone' => $task->isDone()
+            ]
+        ]);
+
+        
+    }
     #[Route('/task/{taskId}/checklist', name: 'get_checklist', methods: ['GET'])]
     public function getChecklist(string $taskId, DocumentManager $dm): JsonResponse
     {

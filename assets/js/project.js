@@ -259,6 +259,43 @@ const deleteTaskBtn = taskPopup.querySelector('.delete-task-btn');
 closeTaskPopupBtn.addEventListener('click', () => hidePopup(taskPopup));
 deleteTaskBtn.addEventListener('click', () => deleteTask(taskPopup.dataset.taskId));
 
+const toggleTaskStatusBtn = taskPopup.querySelector('.toggle-task-status-btn');
+
+toggleTaskStatusBtn.addEventListener('click', function() {
+    const currentTask = document.querySelector(`[data-task-id="${taskPopup.dataset.taskId}"]`);
+
+    toggleTaskStatusBtn.classList.toggle('done');
+
+    let isDone;
+    if (currentTask.classList.contains('done')) {
+        
+        isDone = false;
+        toggleTaskStatusBtn.querySelector('span').innerText = "Terminer la tâche";
+    } else {
+        currentTask.classList.add('done');
+        hidePopup(taskPopup);
+
+        isDone = true;
+    }
+
+
+    fetch('/task/' + taskPopup.dataset.taskId + '/update-status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
+        },
+        body: JSON.stringify({ isDone: isDone })
+    })
+    .then(response => response.json())
+    .then(data => {
+
+    })
+    .catch(error => console.error("Erreur fetch:", error));
+
+})
+
+
 tasks.forEach(task => {
     initTaskEvent(task);
 })
@@ -270,6 +307,7 @@ function initTaskDataAndShowPopup(taskId) {
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
         },
+        
     })
     .then(response => response.json())
     .then(data => {
@@ -314,7 +352,11 @@ function initTaskDataAndShowPopup(taskId) {
             descriptionInput.dataset.initialized = "true";
 
         }
-        
+
+        if (data.isDone) {
+            toggleTaskStatusBtn.querySelector('span').innerText = 'Activer la tâche';
+            toggleTaskStatusBtn.classList.add('done');
+        }
 
         
         showPopup(taskPopup, 'flex');

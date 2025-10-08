@@ -1,5 +1,12 @@
 const { showPopup, hidePopup, sanitizeInput, treatFormAlert } = require("../app");
 
+import Hammer from 'hammerjs';
+import { initSwipeSections } from './swipeSections';
+
+document.addEventListener('DOMContentLoaded', () => {
+    initSwipeSections();
+});
+
 const myProjectsBtn = document.getElementById("my-projects-btn");
 const myDataBtn = document.getElementById("my-data-btn");
 const parametersBtn = document.getElementById("parameters-btn");
@@ -31,7 +38,44 @@ const addProjectBtn = addProjectPopup.querySelector('.add-project-btn');
 const addProjectInput = addProjectPopup.querySelector('input');
 const hideAddProjectPopupBtn = addProjectPopup.querySelector('.hide-popup-btn');
 
+const deleteProjectPopup = document.getElementById('delete-project-popup');
+const deleteProjectBtn = deleteProjectPopup.querySelector('.delete-project-btn');
+const hidedeleteProjectPopupBtn = deleteProjectPopup.querySelector('.hide-popup-btn');
+
 const projectsList = myProjectsSection.querySelector(".projects");
+
+const projectDivs = document.querySelectorAll('.project');
+
+projectDivs.forEach(project => {
+    
+    initProjectEvents(project);
+
+
+})
+
+function initProjectEvents(projectNode) {
+    const currentDeleteProjectBtn = projectNode.querySelector('.show-delete-project-popup-btn');
+
+    if (window.innerWidth < 768) {
+        currentDeleteProjectBtn.style.opacity = '';
+    } else {
+        projectNode.addEventListener('mouseover', function() {
+        
+
+            currentDeleteProjectBtn.style.opacity = "100%";
+        })
+        projectNode.addEventListener('mouseout', function() {
+    
+            currentDeleteProjectBtn.style.opacity = "0%";
+        })
+    }
+    
+
+    currentDeleteProjectBtn.addEventListener('click', function() {
+        showPopup(deleteProjectPopup, 'flex');
+        deleteProjectPopup.dataset.projectId = projectNode.dataset.projectId;
+    })
+}
 
 profilShowAddProjectPopupBtn.addEventListener('click', function() {
     showPopup(addProjectPopup, 'flex');
@@ -76,18 +120,21 @@ addProjectBtn.addEventListener('click', function() {
                 emptyProjectsMessage.style.display = "none";
             }
 
-            const projectDiv = document.createElement('a');
+            const projectDiv = document.createElement('div');
             projectDiv.classList.add('project');
-            projectDiv.href = `/project/${data.project.id}`;
-            projectDiv.textContent = data.project.title;
+            projectDiv.dataset.projectId = data.project.id;
+            projectDiv.innerHTML = `
+                <a class="swipe-item" href="project/${data.project.id }}" >${data.project.title }</a>
+                <svg class="show-delete-project-popup-btn trash-icon" style="opacity:0%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16m-10 4v6m4-6v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
+            `
+            // projectDiv.href = `/project/${data.project.id}`;
+            // projectDiv.textContent = data.project.title;
 
             // Redirection au clic vers /project/{id}
-            projectDiv.addEventListener('click', () => {
-                window.location.href = `/project/${data.project.id}`;
-            });
-
-            // Ajout au conteneur
             projectsList.appendChild(projectDiv);
+            initProjectEvents(projectDiv);
+            initSwipeSections();
+            
 
             hidePopup(addProjectPopup);
             addProjectInput.value = "";
@@ -96,6 +143,33 @@ addProjectBtn.addEventListener('click', function() {
         } else {
             alert("Erreur : " + data.message);
         }
+    })
+    .catch(error => console.error("Erreur fetch:", error));
+
+    // clear l'input après l’envoi
+    
+})
+
+hidedeleteProjectPopupBtn.addEventListener('click', () => {
+    hidePopup(deleteProjectPopup);
+})
+
+deleteProjectBtn.addEventListener('click', function() {
+    const projectId = deleteProjectPopup.dataset.projectId;
+    const currentProjectDiv = document.querySelector(`[data-project-id="${projectId}"]`);
+
+    fetch('/delete-project/' + projectId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        currentProjectDiv.remove();
+
+        hidePopup(deleteProjectPopup);
     })
     .catch(error => console.error("Erreur fetch:", error));
 

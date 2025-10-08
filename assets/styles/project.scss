@@ -101,6 +101,10 @@ body {
                     -ms-user-select: none;      /* IE/Edge */
     
                 }
+
+                .task.done {
+                    background-color: $green-soft-75;
+                }
             }
 
             
@@ -184,9 +188,38 @@ body {
         justify-content: space-between;
         align-items: center;
 
-        .end-task-btn {
+        .toggle-task-status-btn {
             width: fit-content;
             gap: 10px;
+
+            span {
+                color: $mallow-white;
+                font-size: 18px;
+            }
+
+            svg {
+                width: 28px;
+                height: 28px;
+                padding: 2px;
+            }
+        }
+
+        .toggle-task-status-btn.done {
+            background-color: unset;
+            padding: 0px;
+
+            svg {
+                background-color: $green-soft;
+                border-radius: 100px;
+                color: $mallow-medium;
+            }
+
+            span {
+                padding: 8px;
+                border: solid 2px $mallow-medium;
+                color: $mallow-medium;
+                border-radius: 10px;
+            }
         }
 
         .close-delete-btns {

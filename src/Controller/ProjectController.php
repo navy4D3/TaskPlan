@@ -91,12 +91,32 @@ final class ProjectController extends AbstractController
         $em->persist($project);
         $em->flush();
 
+        $trashIcon = SectionIcon::from('trash');
+
         return new JsonResponse([
             'success' => true,
             'project' => [
                 'id' => $project->getId(),
                 'title' => $project->getTitle()
-            ]
+            ],
+            'icon' => [
+                'icon' => $section->getIcon()->icon(),
+                'svg' => $section->getIcon()->getSvg(),
+            ],
+        ]);
+    }
+
+    #[Route('/delete-project/{id}', name: 'delete_project')]
+    public function deleteProject($id, Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $project = $em->getRepository(Project::class)->find($id);
+
+        $em->remove($project);
+        
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
         ]);
     }
 

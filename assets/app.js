@@ -32,6 +32,16 @@ export function hidePopup(divToHide) {
     
 }
 
+const blurEffect = document.querySelector('.blur-effect');
+
+if (blurEffect) {
+    blurEffect.addEventListener('click', function() {
+        const popups = document.querySelectorAll('.popup');
+
+        popups.forEach(popup => popup.addEventListener('click', hidePopup(popup)));
+    })
+}
+
 export function sanitizeInput(str) {
     // Trim, enlever balises HTML, limiter espaces multiples
     return str
