@@ -57,9 +57,9 @@ loginLabel.addEventListener('click', function() {
     loginForm.style.display = "flex";
 
     if (window.innerWidth < 512) {
-        loginForm.style.borderRadius = "0px";
+        loginForm.style.borderRadius = "20px";
     } else {
-        loginForm.style.borderRadius = "30px 0px 30px 30px";
+        // loginForm.style.borderRadius = "30px 0px 30px 30px";
     }
     
     registerLabel.classList.remove('selected');
@@ -72,14 +72,21 @@ registerLabel.addEventListener('click', function() {
     loginForm.style.display = "none";
 
     if (window.innerWidth < 512) {
-        loginForm.style.borderRadius = "0px";
+        loginForm.style.borderRadius = "20px";
     } else {
-        registerForm.style.borderRadius = "0px 30px 30px 30px";
+        // registerForm.style.borderRadius = "0px 30px 30px 30px";
     }
     
     registerLabel.classList.add('selected');
     loginLabel.classList.remove('selected');
     
+})
+
+const boostProductivityBtn = document.getElementById("boost-productivity-btn");
+
+boostProductivityBtn.addEventListener('click', function() {
+    
+    document.querySelector('.register-login-section').scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" })
 })
 
 

@@ -22,7 +22,7 @@
             <nav>
                 <div class="content">
                     <div class="left-btns">
-                        <div id="project-btn" class="project-btn">
+                        <div id="navbar-projects-btn" class="project-btn">
                             <span>Projets</span>
                             <twig:ux:icon name="bi:chevron-right" />
                         </div>
@@ -46,6 +46,41 @@
                 <div class="mallow-shadow"></div>
 
             </nav>
+
+            <div id="navbar-projects-section" style="display:none">
+                <div class="header">
+                    <div class="left">
+                        <twig:ux:icon name="material-symbols:folder-rounded" />
+                        <span>Projets</span>
+                    </div>
+                    
+                    <twig:ux:icon class="hide-section-btn" name="bi:x" />
+                </div>
+
+                <div class="content">
+                    <div class="projects" style="">
+                        {% if app.user.projects is empty %}
+                            <p style="opacity:75%" class="empty-projects-message">Aucun projet en cours</p>
+                        {% else %}
+                            {% for project in app.user.projects %}
+                                    <a class="project" href="/project/{{ project.id }}" >{{ project.title }}</a>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <button class="show-add-project-popup-btn btn mallow-white"><twig:ux:icon name="bi:plus-lg" />Ajouter</button>
+                </div>
+                
+            </div>
+
+            <div id="add-project-popup" class="add-project-popup popup center" style="display:none">
+                <div class="label-quit">
+                    <span>Ajouter un projet</span>
+                    <twig:ux:icon class="hide-popup-btn"name="bi:x" />
+                </div>
+
+                <input type="text" placeholder="nom du projet">
+                <button class="add-project-btn mallow-medium btn inactive">Ajouter</button>
+            </div>
         {% endif %}
     </header>
 

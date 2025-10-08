@@ -1,11 +1,8 @@
 const { showPopup, hidePopup, sanitizeInput, treatFormAlert } = require("../app");
 
 import Hammer from 'hammerjs';
-import { initSwipeSections } from './swipeSections';
+import { initProjectEvents } from './projectTools';
 
-document.addEventListener('DOMContentLoaded', () => {
-    initSwipeSections();
-});
 
 const myProjectsBtn = document.getElementById("my-projects-btn");
 const myDataBtn = document.getElementById("my-data-btn");
@@ -31,124 +28,18 @@ sectionBtns.forEach(btn => {
     })
 })
 
-const myProjectsSection = document.querySelector(".my-projects-section");
-const profilShowAddProjectPopupBtn = myProjectsSection.querySelector(".show-add-project-popup-btn");
-const addProjectPopup = document.getElementById('add-project-popup');
-const addProjectBtn = addProjectPopup.querySelector('.add-project-btn');
-const addProjectInput = addProjectPopup.querySelector('input');
-const hideAddProjectPopupBtn = addProjectPopup.querySelector('.hide-popup-btn');
-
 const deleteProjectPopup = document.getElementById('delete-project-popup');
 const deleteProjectBtn = deleteProjectPopup.querySelector('.delete-project-btn');
 const hidedeleteProjectPopupBtn = deleteProjectPopup.querySelector('.hide-popup-btn');
 
-const projectsList = myProjectsSection.querySelector(".projects");
+const profilProjectDivs = document.querySelector('.section-details').querySelectorAll('.project');
 
-const projectDivs = document.querySelectorAll('.project');
-
-projectDivs.forEach(project => {
-    
+profilProjectDivs.forEach(project => {
     initProjectEvents(project);
-
-
 })
 
-function initProjectEvents(projectNode) {
-    const currentDeleteProjectBtn = projectNode.querySelector('.show-delete-project-popup-btn');
-
-    if (window.innerWidth < 768) {
-        currentDeleteProjectBtn.style.opacity = '';
-    } else {
-        projectNode.addEventListener('mouseover', function() {
-        
-
-            currentDeleteProjectBtn.style.opacity = "100%";
-        })
-        projectNode.addEventListener('mouseout', function() {
-    
-            currentDeleteProjectBtn.style.opacity = "0%";
-        })
-    }
-    
-
-    currentDeleteProjectBtn.addEventListener('click', function() {
-        showPopup(deleteProjectPopup, 'flex');
-        deleteProjectPopup.dataset.projectId = projectNode.dataset.projectId;
-    })
-}
-
-profilShowAddProjectPopupBtn.addEventListener('click', function() {
-    showPopup(addProjectPopup, 'flex');
-
-    addProjectBtn.classList.add('inactive');
-})
-
-hideAddProjectPopupBtn.addEventListener('click', () => {
-    hidePopup(addProjectPopup);
-    addProjectInput.value = "";
-})
-
-addProjectInput.addEventListener('input', () => {
-    addProjectBtn.classList.remove('inactive');
-})
-
-addProjectBtn.addEventListener('click', function() {
-    let title = sanitizeInput(addProjectInput.value);
-
-    if (!title) {
-        alert("Veuillez entrer un titre de projet valide");
-        return;
-    }
-
-    fetch('/add-project', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest', // pour détecter l'AJAX côté Symfony
-        },
-        body: JSON.stringify({ title: title })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log("Projet créé :", data.project);
-            // 👉 ici tu pourrais ajouter dynamiquement le projet à ta liste
-
-            const emptyProjectsMessage = document.querySelector('.empty-projects-message')
-
-            if (emptyProjectsMessage) {
-                emptyProjectsMessage.style.display = "none";
-            }
-
-            const projectDiv = document.createElement('div');
-            projectDiv.classList.add('project');
-            projectDiv.dataset.projectId = data.project.id;
-            projectDiv.innerHTML = `
-                <a class="swipe-item" href="project/${data.project.id }}" >${data.project.title }</a>
-                <svg class="show-delete-project-popup-btn trash-icon" style="opacity:0%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16m-10 4v6m4-6v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg>
-            `
-            // projectDiv.href = `/project/${data.project.id}`;
-            // projectDiv.textContent = data.project.title;
-
-            // Redirection au clic vers /project/{id}
-            projectsList.appendChild(projectDiv);
-            initProjectEvents(projectDiv);
-            initSwipeSections();
-            
-
-            hidePopup(addProjectPopup);
-            addProjectInput.value = "";
 
 
-        } else {
-            alert("Erreur : " + data.message);
-        }
-    })
-    .catch(error => console.error("Erreur fetch:", error));
-
-    // clear l'input après l’envoi
-    
-})
 
 hidedeleteProjectPopupBtn.addEventListener('click', () => {
     hidePopup(deleteProjectPopup);

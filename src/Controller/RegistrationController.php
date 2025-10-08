@@ -27,6 +27,11 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, Security $security, AuthenticationUtils $authenticationUtils): Response
     {
+
+        if ($this->getUser()) {
+            return $this->redirectToRoute('profil');
+        }
+        
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -54,7 +59,7 @@ class RegistrationController extends AbstractController
 
             $security->login($user);
             // do anything else you need here, like send an email
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('home');
         }
 
         // $renderPath = 'registration/register.html.twig';

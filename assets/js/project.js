@@ -271,6 +271,7 @@ toggleTaskStatusBtn.addEventListener('click', function() {
         
         isDone = false;
         toggleTaskStatusBtn.querySelector('span').innerText = "Terminer la tâche";
+        currentTask.classList.remove('done');
     } else {
         currentTask.classList.add('done');
         hidePopup(taskPopup);
@@ -356,6 +357,9 @@ function initTaskDataAndShowPopup(taskId) {
         if (data.isDone) {
             toggleTaskStatusBtn.querySelector('span').innerText = 'Activer la tâche';
             toggleTaskStatusBtn.classList.add('done');
+        } else {
+            toggleTaskStatusBtn.querySelector('span').innerText = 'Terminer la tâche';
+            toggleTaskStatusBtn.classList.remove('done');
         }
 
         

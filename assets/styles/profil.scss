@@ -158,7 +158,8 @@ body {
                 display: flex;
                 flex-direction: column;
                 gap: 10px;
-
+                width: fit-content;
+                min-width: 300px;
                 .project {
                     display: flex;
                     flex-direction: row;
@@ -166,10 +167,12 @@ body {
                     align-items: center;
                     gap: 10px;
 
+
                     a {
                         padding: 10px;
                         text-decoration: none;
                         border-radius: 10px;
+                        width: 100%;
 
                         font-family: $inter-body;
                         color: $mallow-black;
@@ -195,9 +198,13 @@ body {
 
             }
         }
+
+        .my-data-section, .parameters-section, .my-data-form, .edit-mail-form, .edit-password-form {
+            max-width: 500px;
+        }
     
         .my-data-section {
-            max-width: 500px;
+
             .label-btn {
                 h2 {
                     margin: 5px 0px;
@@ -215,11 +222,8 @@ body {
 
         }
 
-        .parameters-section {
-            max-width: 500px;
-        }
+        
         .my-data-form, .edit-mail-form, .edit-password-form {
-            max-width: 500px;
 
             > div {
                 flex-direction: row;
@@ -382,7 +386,11 @@ body {
         }
 
         .section-details {
-            max-width: 100%;
+            // max-width: 100%;
+
+            .my-data-section, .parameters-section, .my-data-form, .edit-mail-form, .edit-password-form {
+                max-width: 100%;
+            }
 
             .section {
                 .label-btn {
@@ -407,6 +415,7 @@ body {
 
             .my-projects-section {
                 .projects {
+                    width: 100%;
                     .swipe-item {
                         position: relative;
                         background: white;
@@ -431,9 +440,6 @@ body {
                     
                     .project {
                         position: relative;
-                        a {
-                            width: 100%;
-                        }
                         
 
                         svg {

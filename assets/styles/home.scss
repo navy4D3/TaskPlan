@@ -142,6 +142,7 @@ body {
             padding: 10px;
             width: 50%;
             text-align: center;
+            opacity: 75%;
         }
 
         .selected {
@@ -150,10 +151,10 @@ body {
             font-size: 20px;
             pointer-events: none;
             cursor: default;
-            color: $mallow-medium-white;
+            color: $mallow-medium;
             
-            background-color: $mallow-black;
-            border-radius: 30px 30px 0px 0px;
+            // background-color: $mallow-black;
+            // border-radius: 30px 30px 0px 0px;
         }
 
     }
@@ -163,7 +164,8 @@ body {
         width: 100%;
         background-color: $mallow-black;
         padding: 40px;
-        border-radius: 0px 30px 30px 30px;
+        border-radius: 30px;
+        box-shadow: inset 0px 0px 20px $mallow-medium;
         // display: flex;
         // flex-direction: column;
         // gap: 15px;
@@ -390,7 +392,8 @@ body {
     }
 
     .register-login-section {
-        padding: 0px;
+        padding: 10px;
+        // border-radius: 10px;
 
         .labels {
             span {
@@ -404,9 +407,11 @@ body {
             }
         }
 
-        form {
-            border-radius: 0px;
-            padding: 30px 20px;
+        .login-form, .register-form {
+            border-radius: 20px;
+            padding: 30px;
+            // border: solid 2px $mallow-medium;
+            box-shadow: inset 0px 0px 20px $mallow-medium;
         }
     }
 

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Project;
 use App\Entity\Section;
 use App\Entity\Task;
+use App\Entity\User;
 use App\Enum\SectionColor;
 use App\Enum\SectionIcon;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +20,14 @@ final class ProjectController extends AbstractController
     #[Route('/project/{id}', name: 'app_project')]
     public function index($id, EntityManagerInterface $em): Response
     {
+
         $project = $em->getRepository(Project::class)->find($id);
+        $userMail = $this->getUser()->getUserIdentifier();
+        $user = $em->getRepository(User::class)->findOneBy(['email' => $userMail]);
+
+        if (!$user->getProjects()->contains($project)) {
+            return $this->redirectToRoute('profil');
+        }
 
         $tasks = $em->getRepository(Task::class)->findBy(['project' => $project]);
 
